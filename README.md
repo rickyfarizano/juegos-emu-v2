@@ -1,10 +1,18 @@
 <h1>Juegos Emu</h1>
+
+<h2>Integrantes</h2>
+<ul>
+  <li><strong>Ricardo Farizano.</strong></li>
+  <li><strong>Tomas Averbuj.</strong></li>
+  <li><strong>Matias Quinteros</strong>.</li>
+</ul>
+
+<h2>Ramas</h2>
 <ul>
   <li><strong>Rama Backend</strong>: cambios del Backend. (main del backend)</li>
   <li><strong>Rama Frontend</strong>cambios del Frontend. (main del frontend)</li>
 </ul>
 
-<h2>Ramas</h2>
 La idea es mantener los cambios de Frontend y Backend separados en todo momento, para mantener el repositorio ordenado y evitar conflictos.
 La rama <strong>main</strong> solamente va a utilizarse para hacer el merge final del frontend y el backend para luego entregar el proyecto o, en todo caso, hacer deploy 
 en algun hosting si asi lo queremos.
@@ -43,12 +51,3 @@ de la misma manera en la que documentamos las ramas. Con este formato.
   <li><strong>feat/frontend-header</strong></li>
   <li><strong>fix/backend-userController</strong></li>
 </ul>
-
-<h2>Integrantes</h2>
-<ul>
-  <li><strong>Ricardo Farizano.</strong></li>
-  <li><strong>Tomas Averbuj.</strong></li>
-  <li><strong>Matias Quinteros</strong>.</li>
-</ul>
-
-
