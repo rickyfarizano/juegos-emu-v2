@@ -1,0 +1,82 @@
+/* src/pages/EditGames.css */
+.edit-games-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+  }
+  
+  .game-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  input, textarea, select {
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .current-image {
+    margin: 10px 0;
+  }
+  
+  .submit-button, .cancel-button {
+    background-color: black;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin: 5px 0;
+  }
+  
+  .submit-button:hover, .cancel-button:hover {
+    background-color: gray;
+  }
+  
+  .games-list {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .game-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .small-action-button {
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+  }
+  
+  .small-action-button:hover {
+    background-color: gray;
+  }
+  
