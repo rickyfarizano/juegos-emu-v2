@@ -14,12 +14,12 @@ function App() {
     <GameProvider> {/* Envolvemos la aplicación con GameProvider */}
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/gameList" element={<GameList />} />
-        <Route path="/gameList/:id" element={<GameDetails />} />
-        <Route path="/categories" element={<GameCategories />} />
-        <Route path="/developers" element={<Developers />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/" element={<Home/>} />
+        <Route path="/gameList" element={<GameList/>} />
+        <Route path="/gameList/:id" element={<GameDetails/>} />
+        <Route path="/categories" element={<GameCategories/>} />
+        <Route path="/developers" element={<Developers/>} />
+        <Route path="/admin" element={<Admin/>} />
       </Routes>
     </GameProvider>
   );
