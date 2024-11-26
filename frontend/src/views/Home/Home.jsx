@@ -6,9 +6,9 @@ const Home = () => {
   return (
     <div className="home-container">
       {/* Banner lateral izquierdo */}
-      <div className="left-banner">
+      {/* <div className="left-banner">
         <img src="/images/god-of-war-izquierda.jpg" alt="Left Banner" />
-      </div>
+      </div> */}
 
       {/* Contenido principal (Slider en el centro) */}
       <div className="main-content">
@@ -16,9 +16,9 @@ const Home = () => {
       </div>
 
       {/* Banner lateral derecho */}
-      <div className="right-banner">
+      {/* <div className="right-banner">
         <img src="/images/the-witcher-derecha.jpg" alt="Right Banner" />
-      </div>
+      </div> */}
     </div>
   );
 };

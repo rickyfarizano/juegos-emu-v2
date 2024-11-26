@@ -1,0 +1,12 @@
+main {
+    background-image: url('../public/images/bg-juegos-emu.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 100%;
+}
+
+main .container {
+    max-width: 1300px;
+    width: 100%;
+}
