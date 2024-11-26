@@ -16,6 +16,7 @@ const GameList = () => {
     <div className="grid grid-cols-4 gap-4">
       {newGames.map((game, index) => (
         <div key={index} className="border p-4">
+          <img src={game.image} />
           <h3>{game.title}</h3>
           <p>{game.genre}</p>
           <p>peso del juego: {game.weight}</p>
