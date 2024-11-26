@@ -50,4 +50,14 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const games = await Game.find();  // Obtener todos los juegos de la base de datos
+    res.status(200).json(games);  // Devolver los juegos en formato JSON
+  } catch (error) {
+    console.error('Error fetching games:', error);
+    res.status(500).json({ message: 'Error fetching games', error: error.message });
+  }
+});
+
 export default router;
