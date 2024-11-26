@@ -34,11 +34,11 @@ router.post('/', upload.single('image'), async (req, res) => {
     const newGame = new Game({
       title,
       genre,
-      releaseYear,
-      rating,
+      releaseYear: Number(releaseYear), // Conversión explícita
+      weight: Number(weight),          // Conversión explícita
+      rating: rating ? Number(rating) : null, // Opcional
       description,
-      weight,
-      image: req.file ? req.file.path : null,  // Asegurarse de que se guarda la imagen correctamente
+      image: req.file ? req.file.path : null,
     });
 
     await newGame.save();

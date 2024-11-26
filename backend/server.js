@@ -10,6 +10,21 @@ import gameRoutes from './routes/games.js'; // Asegúrate de usar .js en la impo
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import multer from 'multer';
+
+// Configurar el almacenamiento con multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'uploads')); // Especificamos la carpeta de destino
+  },
+  filename: (req, file, cb) => {
+    // Renombramos el archivo para evitar conflictos
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+// Crear una instancia de multer con la configuración de almacenamiento
+const upload = multer({ storage: storage });
 
 // Cargar variables de entorno
 dotenv.config();
