@@ -1,0 +1,36 @@
+.home-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* Para que los banners ocupen toda la altura */
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .left-banner,
+  .right-banner {
+    flex: 1; /* Ocupa todo el ancho sobrante */
+    background-color: #ccc; /* Fondo de prueba (opcional) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .left-banner img,
+  .right-banner img {
+    width: 100%; /* Ocupa todo el ancho sobrante */
+    height: 100%; /* Se ajusta a la altura del viewport */
+    object-fit: cover; /* Mantiene la proporción */
+  }
+  
+  .main-content {
+    width: 1200px; /* Contenedor fijo de ancho */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 20px;
+  }
+  
