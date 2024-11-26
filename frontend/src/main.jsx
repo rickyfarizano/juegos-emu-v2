@@ -9,7 +9,11 @@ import './index.css';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <main className='w-100 flex justify-center items-center'>
+        <div className="w-100 container">
+          <App />
+        </div>
+      </main>
     </BrowserRouter>
   </StrictMode>,
 )
