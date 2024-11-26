@@ -10,13 +10,13 @@ const DeveloperList = () => {
   }, [developers]);
 
   return (
-    <div className="flex">
+    <div className="w-100">
 
 
-      <div className="developer flex gap-4  justify-center flex-col">
+      <div className="developer w-100 flex justify-center flex-col">
         {developerList.map((developer, index) => (
-          <div key={index} className="p-4 border bg-blue-700">
-            <h3 className='text-white'>{developer.name}</h3>
+          <div key={index} className="w-500 p-4 m-4 border bg-blue-900">
+            <h3 className='text-2xl text-white font-bold text-center'>{developer.name}</h3>
             <p className='text-white'>founded: {developer.founded}</p>
             <p className='text-white'>País: {developer.country}</p>
           </div>

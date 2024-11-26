@@ -122,9 +122,9 @@ const AbmDevelopers = () => {
   };
   return (
     <>
-    <h1 className="text-3xl font-bold text-center my-6">AbmDevelopers</h1>
+    <h1 className="text-3xl text-white font-bold text-center my-6">Gestionar Desarrolladoras</h1>
 
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mb-12">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Agregar Desarrollador</h2>
       <div className="form-container space-y-8">
         <form onSubmit={handleRegister} className="space-y-4">

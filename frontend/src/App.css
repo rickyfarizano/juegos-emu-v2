@@ -3,7 +3,7 @@ main {
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    height: 100%;
+    background-size: cover;
 }
 
 main .container {
