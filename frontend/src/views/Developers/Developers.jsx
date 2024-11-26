@@ -10,14 +10,20 @@ const DeveloperList = () => {
   }, [developers]);
 
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {developerList.map((developer, index) => (
-        <div key={index} className="border p-4">
-          <h3>{developer.name}</h3>
-          <p>founded: {developer.founded}</p>
-          <p>País: {developer.country}</p>
-        </div>
-      ))}
+    <div className="flex">
+
+
+      <div className="developer flex gap-4  justify-center flex-col">
+        {developerList.map((developer, index) => (
+          <div key={index} className="p-4 border bg-blue-700">
+            <h3 className='text-white'>{developer.name}</h3>
+            <p className='text-white'>founded: {developer.founded}</p>
+            <p className='text-white'>País: {developer.country}</p>
+          </div>
+
+          // aca  va a ir el componente de carousel para cada juego
+        ))}
+      </div>
     </div>
   );
 };
