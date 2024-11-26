@@ -1,21 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { useDeveloperContext } from '../../context/DeveloperContext'; // Importar el hook del contexto de desarrolladoras
 
-const Developers = () => {
+const DeveloperList = () => {
+  const { developers } = useDeveloperContext(); // Acceder al estado de desarrolladoras desde el contexto
+  const [developerList, setDeveloperList] = useState([]);
+
+  useEffect(() => {
+    setDeveloperList(developers); // Actualizar el estado local cuando cambien las desarrolladoras
+  }, [developers]);
+
   return (
-    <section className="developers">
-      <h1 className="main-title">Desarrolladoras</h1>
-      <div className="container-developers">
-
-
-        {/* estructura a repetirse */}
-        <div className="developer">
-          {/* aca va a ir el componente GameCard, va a desplazarse estilo carousel */}
-          <h2>aca van a ir los juegos de cada desarrolladora</h2>
+    <div className="grid grid-cols-4 gap-4">
+      {developerList.map((developer, index) => (
+        <div key={index} className="border p-4">
+          <h3>{developer.name}</h3>
+          <p>founded: {developer.founded}</p>
+          <p>País: {developer.country}</p>
         </div>
+      ))}
+    </div>
+  );
+};
 
-      </div>
-    </section>
-  )
-}
-
-export default Developers
+export default DeveloperList;
