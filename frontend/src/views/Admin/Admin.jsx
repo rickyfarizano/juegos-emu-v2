@@ -69,6 +69,12 @@ const Admin = () => {
         <option value="Aventura">Aventura</option>
         <option value="RPG">RPG</option>
         <option value="Deportes">Deportes</option>
+        <option value="FPS">FPS</option>
+        <option value="Survival">Survival</option>
+        <option value="Horror">Horror</option>
+        <option value="Sandbox">Sandbox</option>
+        <option value="Souls">Souls</option>
+        <option value="Roguelike">Roguelike</option>
       </select>
       <label
         htmlFor="floating_genre"
