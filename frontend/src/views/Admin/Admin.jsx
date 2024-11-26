@@ -147,6 +147,9 @@ const Admin = () => {
       Agregar Juego
     </button>
   </form>
+
+
+    
   );
 };
 
