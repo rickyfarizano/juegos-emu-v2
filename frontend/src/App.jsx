@@ -7,6 +7,7 @@ import Developers from './views/Developers/Developers';
 import GameDetails from './views/GameDetails/GameDetails';
 import GameCategories from './views/Categories/GameCategories';
 import Admin from './views/Admin/Admin';
+import AbmDevelopers from './views/AbmDevelopers/AbmDevelopers';
 import { GameProvider } from './context/GameContext'; // Asegúrate de que la ruta sea correcta
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/categories" element={<GameCategories/>} />
         <Route path="/developers" element={<Developers/>} />
         <Route path="/admin" element={<Admin/>} />
+        <Route path="/admin/developers" element={<AbmDevelopers/>} />
       </Routes>
     </GameProvider>
   );
