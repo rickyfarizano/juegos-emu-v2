@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Header from './components/header/Header';
+import Footer from './components/Footer/Footer';
 import Home from './views/Home/Home';
 import GameList from './views/GameList/GameList';
 import Developers from './views/Developers/Developers';
@@ -25,6 +26,7 @@ function App() {
           <Route path="/admin" element={<Admin/>} />
           <Route path="/admin/developers" element={<AbmDevelopers/>} />
         </Routes>
+        <Footer />
       </DeveloperProvider>
     </GameProvider>
   );
