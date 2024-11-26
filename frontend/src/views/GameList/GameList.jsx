@@ -13,9 +13,9 @@ const GameList = () => {
   }, [games]);
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-4 gap-4 m-4">
       {newGames.map((game, index) => (
-        <div key={index} className="border p-4">
+        <div key={index} className="p-4 bg-blue-900">
           <img src={game.image} />
           <h3>{game.title}</h3>
           <p>{game.genre}</p>

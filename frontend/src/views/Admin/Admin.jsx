@@ -99,7 +99,7 @@ const Admin = () => {
 
   return (
     <div className="admin-container">
-      <h1 className="text-3xl mb-4">Gestión de Juegos</h1>
+      <h1 className="text-3xl mb-4 text-center text-white font-bold mt-4">Gestión de Juegos</h1>
 
       {/* Formulario de juego */}
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-6 bg-white shadow-md rounded-md p-6">
