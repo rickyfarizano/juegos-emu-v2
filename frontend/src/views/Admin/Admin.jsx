@@ -23,6 +23,8 @@ const Admin = () => {
         const response = await fetch('http://localhost:5000/api/games');
         const data = await response.json();
         setGames(data);
+
+        console.log(data);
       } catch (error) {
         console.error('Error al obtener los juegos:', error);
       }
@@ -71,47 +73,61 @@ const Admin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     const formPayload = new FormData();
-
+  
+    // Recorremos formData para agregar sus valores al FormData
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'requirements') {
+        // Si 'requirements' es un objeto, lo recorremos para agregar sus propiedades
         Object.entries(value).forEach(([reqKey, reqValue]) => {
           formPayload.append(`requirements[${reqKey}]`, reqValue);
         });
       } else if (key === 'gallery' && value.length > 0) {
-        value.forEach((file, index) =>
-          formPayload.append(`gallery[${index}]`, file)
-        );
-      } else if (value) {
+        // Si 'gallery' tiene archivos, los agregamos a formPayload
+        value.forEach((file, index) => {
+          formPayload.append(`gallery[${index}]`, file);
+        });
+      } else if (key === 'image' && value) {
+        // Si hay una imagen seleccionada, la agregamos
+        formPayload.append(key, value);
+      } else if (value && typeof value !== 'object') {
+        // Si el valor no es un objeto, lo agregamos directamente
         formPayload.append(key, value);
       }
     });
-
+  
     try {
       const response = await fetch(
         selectedGame
           ? `http://localhost:5000/api/games/${selectedGame._id}`
           : 'http://localhost:5000/api/games',
         {
-          method: selectedGame ? 'PUT' : 'POST',
+          method: selectedGame ? 'PUT' : 'POST',  // Determinamos si es un 'PUT' (actualización) o 'POST' (creación)
           body: formPayload,
         }
       );
-
+  
+      if (!response.ok) throw new Error('Error en la solicitud');
+  
       const data = await response.json();
+  
+      // Si estamos actualizando un juego, actualizamos la lista
       if (selectedGame) {
         setGames((prevGames) =>
           prevGames.map((game) => (game._id === data._id ? data : game))
         );
       } else {
-        setGames([...games, data]);
+        // Si estamos creando un juego, lo agregamos a la lista
+        setGames((prevGames) => [...prevGames, data]);
       }
-
-      resetForm();
+  
+      resetForm(); // Reseteamos el formulario después de enviar los datos
     } catch (error) {
       console.error('Error al enviar los datos del juego:', error);
     }
   };
+  
 
   const handleDelete = async (gameId) => {
     try {
@@ -139,7 +155,11 @@ const Admin = () => {
       description: game.description || '',
       youtubeUrl: game.youtubeUrl || '',
       gallery: [],
-      requirements: game.requirements || { gpu: '', ram: '', cpu: '' },
+      requirements: {
+        gpu: game.requirements?.gpu || '',
+        ram: game.requirements?.ram || '',
+        cpu: game.requirements?.cpu || '',
+      },
       downloadLink: game.downloadLink || '',
     });
   };
@@ -255,7 +275,7 @@ const Admin = () => {
             URL de YouTube
           </label>
           <input
-            type="url"
+            type="text"
             name="youtubeUrl"
             value={formData.youtubeUrl}
             onChange={handleChange}

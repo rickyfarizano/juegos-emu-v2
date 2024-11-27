@@ -1,21 +1,43 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import {useParams} from 'react-router-dom'
+import { useGameContext } from '../../context/GameContext';
 
 const GameDetails = () => {
-  const {id} = useParams();
+  const { id } = useParams();
+  const { games } = useGameContext();
+  const [gameDetails, setGameDetails] = useState(null);
 
+  useEffect(() => {
+
+    const selectedGame = games.find(game => game._id === id);
+    
+
+    // Si se encuentra el juego, actualiza el estado con los detalles del juego
+    if (selectedGame) {
+      setGameDetails(selectedGame);
+      console.log(selectedGame);
+    }
+  }, [id, games]); // Dependencias: se ejecuta cada vez que cambia el id o los juegos
+
+  if (!gameDetails) {
+    return <p>Juego no encontrado.</p>; // Muestra un mensaje si no se encuentra el juego
+  }
+  
   return (
     <section className="game-details">
-      <p>id del juego: {id}</p>
-
       <div className="container">
 
           <div className="game-details__title-img">
-            {/* TITULO DINAMICO */}
-            <h1 className="game-details__title text-3xl font-semibold mb-4 text-center text-white ">Titulo del juego</h1>
+            <h1 className="game-details__title text-3xl font-semibold mb-4 text-center text-white ">{gameDetails.title}</h1>
 
-            <figure className="game-details__img-banner w-100 p-4">
-              <img src="/public/images/dragon-ball-banner.jpg" alt="Imagen dle juego" />
+            <figure className="game-details__img-banner w-100 p-4 flex justify-center items-center">
+            {gameDetails.image && (
+              <img
+                src={`http://localhost:5000/${gameDetails.image}`}
+                alt={gameDetails.title}
+
+              />
+            )}
             </figure>
           </div>
         <div className="game-detals__content border m-4">
@@ -24,41 +46,30 @@ const GameDetails = () => {
           <article className="game-details__description p-4">
             <h2 className="title text-2xl font-semibold mb-4 text-white">Descripicon del juego</h2>
 
-            {/* INFO DINAMICA */}
             <p className="details-description text-white">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quod, facilis! Deleniti neque sed eligendi dolor 
-              ratione dignissimos officia voluptatum repellat culpa odio explicabo necessitatibus, quo, dolorem nostrum?
-               Repellendus, nostrum atque!
+            {gameDetails.description}
             </p>
           </article>
 
           <article className="game-details__screenshots p-4">
-            <h2 className="title text-2xl font-semibold mb-4 text-white">Screenshots</h2>
-            <div className="screenshots-container">
-              {/* carga dinamica de imagenes */}
-              <figure className="screehshot">
-                <img src="#" alt="Screenshot 1" />
-              </figure>
-            </div>
+            <h2 className="title text-2xl font-semibold mb-4 text-white">Video del juego</h2>
+            
+            <a href={gameDetails.youtubeUrl} className='p-2 rounded bg-red-700 hover:bg-red-800 text-white' target='_blank'>Ver video del juego en Youtube</a>
           </article>
 
           <article className="game-requirements p-4">
             <h2 className="title text-2xl font-semibold mb-4 text-white">Requerimientos del sistema</h2>
             <div className="list-container">
-              {/* carga dinamica de requerimientos */}
               <ul className="req-list">
-                <li className="text-white">Procesador: Intel Core i3-9100F</li>
-                <li className="text-white">Tarjeta gráfica: NVIDIA GTX 750 Ti</li>
-                <li className="text-white">RAM: 4 GB DDR3</li>
-                <li className="text-white">Almacenamiento: HDD de 500 GB</li>
-                <li className="text-white">Sistema operativo: Windows 10 de 64 bits</li>
+                <li className="text-white">GPU: {gameDetails.requirements.gpu}</li>
+                <li className="text-white">RAM:{gameDetails.requirements.ram}</li>
+                <li className="text-white">CPU: {gameDetails.requirements.cpu}</li>
               </ul>
             </div>
           </article>
 
           <div className="btn w-100 flex justify-center items-center p-4">
-            {/* Agregar link de descarga dinamicamente */}
-            <a href="#" className="btn-download text-center p-3 rounded bg-blue-900 hover:bg-blue-800 text-white transition-all">Descargar juego</a>
+            <a href={gameDetails.downloadLink} className="btn-download text-center p-3 rounded bg-blue-900 hover:bg-blue-800 text-white transition-all" target='_blank'>Descargar juego</a>
           </div>
         </div>
 
