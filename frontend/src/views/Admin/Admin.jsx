@@ -59,33 +59,66 @@ const Admin = () => {
   };
 
   // Maneja el envío del formulario (Agregar/Editar juego)
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedGame) {
-      // Si hay un juego seleccionado, lo actualizamos
-      const updatedGames = games.map((game) =>
-        game.id === selectedGame.id ? { ...formData, id: game.id } : game
-      );
-      setGames(updatedGames);
-    } else {
-      // Si no hay juego seleccionado, lo agregamos con un id único
-      setGames([...games, { ...formData, id: Date.now() }]);
+  
+    // Validación del campo releaseYear
+    if (isNaN(formData.releaseYear) || formData.releaseYear.trim() === '') {
+      alert('Por favor, ingresa un año de lanzamiento válido.');
+      return;
     }
-    setSelectedGame(null); // Limpiar después de agregar/editar
-    setFormData({
-      title: '',
-      genre: '',
-      releaseYear: '',
-      weight: '',
-      image: null,
-      developer: '',
-      description: '',
-      youtubeUrl: '',
-      gallery: [],
-      requirements: { gpu: '', ram: '', cpu: '' },
-      downloadLink: '',
-    }); // Limpiar el formulario
+  
+    // Convertir releaseYear a número (si es necesario)
+    const releaseYear = parseInt(formData.releaseYear, 10);
+  
+    // Crear un objeto gameData con el año como número
+    const gameData = { ...formData, releaseYear: releaseYear };
+  
+    try {
+      if (selectedGame) {
+        // Actualizar el juego
+        const response = await fetch(`http://localhost:5000/api/games/${selectedGame.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(gameData),
+        });
+        const updatedGame = await response.json();
+        setGames((prevGames) =>
+          prevGames.map((game) => (game.id === updatedGame.id ? updatedGame : game))
+        );
+      } else {
+        // Crear un nuevo juego
+        const response = await fetch('http://localhost:5000/api/games', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(gameData),
+        });
+        const newGame = await response.json();
+        setGames([...games, newGame]);
+      }
+      setSelectedGame(null); // Limpiar después de agregar/editar
+      setFormData({
+        title: '',
+        genre: '',
+        releaseYear: '',
+        weight: '',
+        image: null,
+        developer: '',
+        description: '',
+        youtubeUrl: '',
+        gallery: [],
+        requirements: { gpu: '', ram: '', cpu: '' },
+        downloadLink: '',
+      }); // Limpiar el formulario
+    } catch (error) {
+      console.error('Error al enviar los datos del juego:', error);
+    }
   };
+  
 
   // Maneja la eliminación de un juego
   const handleDelete = (gameId) => {
@@ -178,6 +211,20 @@ const Admin = () => {
           />
         </div>
 
+        {/* Desarrollador */}
+        <div>
+          <label htmlFor="developer" className="block text-sm font-medium text-gray-700">
+            Desarrollador
+          </label>
+          <input
+            type="text"
+            name="developer"
+            value={formData.developer}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
         {/* Imagen */}
         <div>
           <label htmlFor="image" className="block text-sm font-medium text-gray-700">
@@ -187,6 +234,20 @@ const Admin = () => {
             type="file"
             onChange={(e) => handleFileChange(e, 'image')}
             accept="image/*"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* URL de YouTube */}
+        <div>
+          <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700">
+            URL de YouTube
+          </label>
+          <input
+            type="url"
+            name="youtubeUrl"
+            value={formData.youtubeUrl}
+            onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -201,54 +262,106 @@ const Admin = () => {
             value={formData.description}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            required
           />
         </div>
 
-        {/* Botones de acción */}
-        <div className="flex justify-between mt-6">
+        {/* Requisitos */}
+        <div>
+          <h3 className="text-lg font-medium text-gray-700">Requisitos</h3>
+          <div className="grid grid-cols-3 gap-2 mt-2">
+            <div>
+              <label htmlFor="gpu" className="block text-sm font-medium text-gray-700">
+                GPU
+              </label>
+              <input
+                type="text"
+                name="gpu"
+                value={formData.requirements.gpu}
+                onChange={handleRequirementChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="ram" className="block text-sm font-medium text-gray-700">
+                RAM
+              </label>
+              <input
+                type="text"
+                name="ram"
+                value={formData.requirements.ram}
+                onChange={handleRequirementChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="cpu" className="block text-sm font-medium text-gray-700">
+                CPU
+              </label>
+              <input
+                type="text"
+                name="cpu"
+                value={formData.requirements.cpu}
+                onChange={handleRequirementChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Enlace de descarga */}
+        <div>
+          <label htmlFor="downloadLink" className="block text-sm font-medium text-gray-700">
+            Enlace de Descarga
+          </label>
+          <input
+            type="url"
+            name="downloadLink"
+            value={formData.downloadLink}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <div className="mt-4 flex justify-center">
           <button
             type="submit"
-            className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+            className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-700"
           >
             {selectedGame ? 'Actualizar Juego' : 'Agregar Juego'}
           </button>
-          {selectedGame && (
-            <button
-              type="button"
-              onClick={() => handleDelete(selectedGame.id)}
-              className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700"
-            >
-              Eliminar Juego
-            </button>
-          )}
         </div>
       </form>
 
-      {/* Lista de juegos */}
-      <div className="mt-8">
-        <h2 className="text-2xl mb-4">Lista de Juegos</h2>
-        <ul>
+      {/* Listado de juegos */}
+      <div className="mt-6">
+        <h2 className="text-xl font-bold mb-4">Juegos Agregados</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {games.map((game) => (
-            <li key={game.id} className="flex justify-between items-center mb-4">
-              <span>{game.title}</span>
-              <div>
+            <div
+              key={game.id}
+              className="border border-gray-300 p-4 rounded-md shadow-sm"
+            >
+              <h3 className="text-lg font-semibold">{game.title}</h3>
+              <p>{game.genre}</p>
+              <div className="flex justify-between mt-2">
                 <button
                   onClick={() => handleEdit(game)}
-                  className="bg-blue-600 text-white py-1 px-3 rounded-md mr-2 hover:bg-blue-700"
+                  className="px-2 py-1 text-white bg-yellow-500 rounded-md hover:bg-yellow-700"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => handleDelete(game.id)}
-                  className="bg-red-600 text-white py-1 px-3 rounded-md hover:bg-red-700"
+                  className="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-700"
                 >
                   Eliminar
                 </button>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
