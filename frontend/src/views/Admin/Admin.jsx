@@ -127,9 +127,22 @@ const Admin = () => {
   
 
   // Maneja la eliminación de un juego
-  const handleDelete = (gameId) => {
-    const updatedGames = games.filter((game) => game.id !== gameId);
-    setGames(updatedGames);
+  const handleDelete = async (gameId) => {
+    try {
+      // Eliminar del backend
+      const response = await fetch(`http://localhost:5000/api/games/${gameId}`, {
+        method: 'DELETE',
+      });
+  
+      if (response.ok) {
+        // Si la eliminación fue exitosa, actualiza el estado local
+        setGames((prevGames) => prevGames.filter((game) => game._id !== gameId));
+      } else {
+        console.error('Error al eliminar el juego del backend.');
+      }
+    } catch (error) {
+      console.error('Error en la solicitud DELETE:', error);
+    }
   };
 
   // Maneja la edición de un juego (rellena el formulario)
@@ -358,7 +371,7 @@ const Admin = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {games.map((game) => (
             <div
-              key={game.id}
+              key={game._id}
               className="border border-gray-300 p-4 rounded-md shadow-sm"
             >
               <h3 className="text-lg font-semibold">{game.title}</h3>
@@ -371,7 +384,7 @@ const Admin = () => {
                   Editar
                 </button>
                 <button
-                  onClick={() => handleDelete(game.id)}
+                  onClick={() => handleDelete(game._id)}
                   className="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-700"
                 >
                   Eliminar
