@@ -29,6 +29,8 @@ const Admin = () => {
   useEffect(() => {
     if (games.length > 0) {
       localStorage.setItem('games', JSON.stringify(games));
+    } else {
+      localStorage.removeItem('games'); // Limpiar si no hay juegos
     }
   }, [games]);
 
@@ -62,12 +64,12 @@ const Admin = () => {
     if (selectedGame) {
       // Si hay un juego seleccionado, lo actualizamos
       const updatedGames = games.map((game) =>
-        game.title === selectedGame.title ? { ...formData } : game
+        game.id === selectedGame.id ? { ...formData, id: game.id } : game
       );
       setGames(updatedGames);
     } else {
-      // Si no hay juego seleccionado, lo agregamos
-      setGames([...games, formData]);
+      // Si no hay juego seleccionado, lo agregamos con un id único
+      setGames([...games, { ...formData, id: Date.now() }]);
     }
     setSelectedGame(null); // Limpiar después de agregar/editar
     setFormData({
@@ -86,8 +88,8 @@ const Admin = () => {
   };
 
   // Maneja la eliminación de un juego
-  const handleDelete = (gameTitle) => {
-    const updatedGames = games.filter((game) => game.title !== gameTitle);
+  const handleDelete = (gameId) => {
+    const updatedGames = games.filter((game) => game.id !== gameId);
     setGames(updatedGames);
   };
 
@@ -214,7 +216,7 @@ const Admin = () => {
           {selectedGame && (
             <button
               type="button"
-              onClick={() => handleDelete(formData.title)}
+              onClick={() => handleDelete(selectedGame.id)}
               className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700"
             >
               Eliminar Juego
@@ -228,7 +230,7 @@ const Admin = () => {
         <h2 className="text-2xl mb-4">Lista de Juegos</h2>
         <ul>
           {games.map((game) => (
-            <li key={game.title} className="flex justify-between items-center mb-4">
+            <li key={game.id} className="flex justify-between items-center mb-4">
               <span>{game.title}</span>
               <div>
                 <button
@@ -238,7 +240,7 @@ const Admin = () => {
                   Editar
                 </button>
                 <button
-                  onClick={() => handleDelete(game.title)}
+                  onClick={() => handleDelete(game.id)}
                   className="bg-red-600 text-white py-1 px-3 rounded-md hover:bg-red-700"
                 >
                   Eliminar
