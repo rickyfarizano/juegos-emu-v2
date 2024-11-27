@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 const Admin = () => {
   const [games, setGames] = useState([]); // Aquí almacenamos los juegos
   const [selectedGame, setSelectedGame] = useState(null); // Juego seleccionado para editar
+  const [inputValue, setInputValue] = useState('');
 
   // Estado para el formulario
   const [formData, setFormData] = useState({
@@ -23,6 +24,15 @@ const Admin = () => {
   useEffect(() => {
     const savedGames = JSON.parse(localStorage.getItem('games')) || [];
     setGames(savedGames);
+  
+    // Si tienes un backend, también puedes hacer una solicitud para obtener los juegos
+    const fetchGames = async () => {
+      const response = await fetch('http://localhost:5000/api/games');
+      const data = await response.json();
+      setGames(data);
+    };
+  
+    fetchGames();
   }, []);
 
   // Guardamos los juegos en localStorage cada vez que la lista cambie
@@ -79,15 +89,11 @@ const Admin = () => {
         // Actualizar el juego
         const response = await fetch(`http://localhost:5000/api/games/${selectedGame.id}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(gameData),
         });
         const updatedGame = await response.json();
-        setGames((prevGames) =>
-          prevGames.map((game) => (game.id === updatedGame.id ? updatedGame : game))
-        );
+        setGames((prevGames) => prevGames.map((game) => (game.id === updatedGame.id ? updatedGame : game)));
       } else {
         // Crear un nuevo juego
         const response = await fetch('http://localhost:5000/api/games', {
@@ -129,7 +135,19 @@ const Admin = () => {
   // Maneja la edición de un juego (rellena el formulario)
   const handleEdit = (game) => {
     setSelectedGame(game); // Establecer juego seleccionado para editar
-    setFormData(game); // Rellenar los campos con los datos del juego
+    setFormData({
+      title: game.title || '',
+      genre: game.genre || '',
+      releaseYear: game.releaseYear || '',
+      weight: game.weight || '',
+      image: game.image || null,
+      developer: game.developer || '',
+      description: game.description || '',
+      youtubeUrl: game.youtubeUrl || '',
+      gallery: game.gallery || [],
+      requirements: game.requirements || { gpu: '', ram: '', cpu: '' },
+      downloadLink: game.downloadLink || '',
+    }); // Rellenar los campos con los datos del juego
   };
 
   return (
