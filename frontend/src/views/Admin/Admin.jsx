@@ -68,58 +68,69 @@ const Admin = () => {
     });
   };
 
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      genre: '',
+      releaseYear: '',
+      weight: '',
+      image: null,
+      developer: '',
+      description: '',
+      youtubeUrl: '',
+      gallery: [],
+      requirements: { gpu: '', ram: '', cpu: '' },
+      downloadLink: '',
+    });
+  };
+
   // Maneja el envío del formulario (Agregar/Editar juego)
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Validación del campo releaseYear
-    if (isNaN(formData.releaseYear) || formData.releaseYear === '') {
-      alert('Por favor, ingresa un año de lanzamiento válido.');
-      return;
+
+    const formPayload = new FormData();
+    formPayload.append('title', formData.title);
+    formPayload.append('genre', formData.genre);
+    formPayload.append('releaseYear', formData.releaseYear);
+    formPayload.append('weight', formData.weight);
+    formPayload.append('developer', formData.developer);
+    formPayload.append('description', formData.description);
+    formPayload.append('youtubeUrl', formData.youtubeUrl);
+    formPayload.append('downloadLink', formData.downloadLink);
+    formPayload.append('requirements[gpu]', formData.requirements.gpu);
+    formPayload.append('requirements[ram]', formData.requirements.ram);
+    formPayload.append('requirements[cpu]', formData.requirements.cpu);
+
+    if (formData.image) {
+      formPayload.append('image', formData.image);
     }
-  
-    // Convertir releaseYear a número (si es necesario)
-    const releaseYear = parseInt(formData.releaseYear, 10);
-  
-    // Crear un objeto gameData con el año como número
-    const gameData = { ...formData, releaseYear: releaseYear };
-  
+    if (formData.gallery.length > 0) {
+      formData.gallery.forEach((file, index) =>
+        formPayload.append(`gallery[${index}]`, file)
+      );
+    }
+
     try {
+      const response = await fetch(
+        selectedGame
+          ? `http://localhost:5000/api/games/${selectedGame._id}`
+          : 'http://localhost:5000/api/games',
+        {
+          method: selectedGame ? 'PUT' : 'POST',
+          body: formPayload,
+        }
+      );
+
+      const data = await response.json();
       if (selectedGame) {
-        // Actualizar el juego
-        const response = await fetch(`http://localhost:5000/api/games/${selectedGame._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(gameData),
-        });
-        const updatedGame = await response.json();
-        setGames((prevGames) => prevGames.map((game) => (game.id === updatedGame.id ? updatedGame : game)));
+        setGames((prev) =>
+          prev.map((game) => (game._id === data._id ? data : game))
+        );
       } else {
-        // Crear un nuevo juego
-        const response = await fetch('http://localhost:5000/api/games', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(gameData),
-        });
-        const newGame = await response.json();
-        setGames([...games, newGame]);
+        setGames([...games, data]);
       }
-      setSelectedGame(null); // Limpiar después de agregar/editar
-      setFormData({
-        title: '',
-        genre: '',
-        releaseYear: '',
-        weight: '',
-        image: null,
-        developer: '',
-        description: '',
-        youtubeUrl: '',
-        gallery: [],
-        requirements: { gpu: '', ram: '', cpu: '' },
-        downloadLink: '',
-      }); // Limpiar el formulario
+      setSelectedGame(null);
+      resetForm();
     } catch (error) {
       console.error('Error al enviar los datos del juego:', error);
     }
