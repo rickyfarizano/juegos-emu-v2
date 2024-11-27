@@ -2,7 +2,7 @@
 import express from 'express';
 import Game from '../models/Game.js';
 import multer from 'multer';
-import { deleteGame } from '../controllers/gameController.js';
+import { deleteGame, updateGame } from '../controllers/gameController.js';
 
 const router = express.Router();
 
@@ -62,5 +62,6 @@ router.get('/', async (req, res) => {
 });
 
 router.delete('/:id', deleteGame);
+router.put('/:id', updateGame);
 
 export default router;

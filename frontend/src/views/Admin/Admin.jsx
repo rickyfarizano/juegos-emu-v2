@@ -73,7 +73,7 @@ const Admin = () => {
     e.preventDefault();
   
     // Validación del campo releaseYear
-    if (isNaN(formData.releaseYear) || formData.releaseYear.trim() === '') {
+    if (isNaN(formData.releaseYear) || formData.releaseYear === '') {
       alert('Por favor, ingresa un año de lanzamiento válido.');
       return;
     }
@@ -87,7 +87,7 @@ const Admin = () => {
     try {
       if (selectedGame) {
         // Actualizar el juego
-        const response = await fetch(`http://localhost:5000/api/games/${selectedGame.id}`, {
+        const response = await fetch(`http://localhost:5000/api/games/${selectedGame._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(gameData),
@@ -147,6 +147,7 @@ const Admin = () => {
 
   // Maneja la edición de un juego (rellena el formulario)
   const handleEdit = (game) => {
+    console.log('Juego seleccionado para editar:', game);
     setSelectedGame(game); // Establecer juego seleccionado para editar
     setFormData({
       title: game.title || '',
@@ -161,7 +162,11 @@ const Admin = () => {
       requirements: game.requirements || { gpu: '', ram: '', cpu: '' },
       downloadLink: game.downloadLink || '',
     }); // Rellenar los campos con los datos del juego
+
+    console.log(formData);
   };
+
+
 
   return (
     <div className="admin-container">
@@ -371,7 +376,7 @@ const Admin = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {games.map((game) => (
             <div
-              key={game._id}
+              key={game.title}
               className="border border-gray-300 p-4 rounded-md shadow-sm"
             >
               <h3 className="text-lg font-semibold">{game.title}</h3>
