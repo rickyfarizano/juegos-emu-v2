@@ -1,4 +1,3 @@
-// routes/games.js
 import express from 'express';
 import Game from '../models/Game.js';
 import multer from 'multer';
@@ -18,26 +17,22 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// Crear un nuevo juego
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-    // Log para revisar los datos recibidos
-    console.log('Received fields:', req.body);
-    console.log('Received file:', req.file);
-
     const { title, genre, releaseYear, rating, description, weight } = req.body;
 
     // Verificación de datos necesarios
     if (!title || !genre || !releaseYear || !weight) {
-      console.log('Missing required fields');
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const newGame = new Game({
       title,
       genre,
-      releaseYear: Number(releaseYear), // Conversión explícita
-      weight: Number(weight),          // Conversión explícita
-      rating: rating ? Number(rating) : null, // Opcional
+      releaseYear: Number(releaseYear),
+      weight: Number(weight),
+      rating: rating ? Number(rating) : null,
       description,
       image: req.file ? req.file.path : null,
     });
@@ -45,23 +40,73 @@ router.post('/', upload.single('image'), async (req, res) => {
     await newGame.save();
     res.status(201).json(newGame);
   } catch (error) {
-    // Log para capturar errores internos
     console.error('Error creating game:', error);
     res.status(500).json({ message: 'Error creating game', error: error.message });
   }
 });
 
+// Obtener todos los juegos
 router.get('/', async (req, res) => {
   try {
-    const games = await Game.find();  // Obtener todos los juegos de la base de datos
-    res.status(200).json(games);  // Devolver los juegos en formato JSON
+    const games = await Game.find();
+    res.status(200).json(games);
   } catch (error) {
     console.error('Error fetching games:', error);
     res.status(500).json({ message: 'Error fetching games', error: error.message });
   }
 });
 
-router.delete('/:id', deleteGame);
-router.put('/:id', updateGame);
+// Actualizar un juego existente
+router.put(
+  '/:id',
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'gallery', maxCount: 10 },
+  ]),
+  async (req, res) => {
+    try {
+      const gameId = req.params.id;
+      const updatedData = { ...req.body };
+
+      // Manejo de archivos recibidos
+      if (req.files.image) {
+        updatedData.image = req.files.image[0].path;
+      }
+      if (req.files.gallery) {
+        updatedData.gallery = req.files.gallery.map((file) => file.path);
+      }
+
+      const updatedGame = await Game.findByIdAndUpdate(gameId, updatedData, {
+        new: true, // Devolver el documento actualizado
+      });
+
+      if (!updatedGame) {
+        return res.status(404).json({ message: 'Juego no encontrado' });
+      }
+
+      res.status(200).json(updatedGame);
+    } catch (error) {
+      console.error('Error updating game:', error);
+      res.status(500).json({ message: 'Error updating game', error: error.message });
+    }
+  }
+);
+
+// Eliminar un juego
+router.delete('/:id', async (req, res) => {
+  try {
+    const gameId = req.params.id;
+    const deletedGame = await Game.findByIdAndDelete(gameId);
+
+    if (!deletedGame) {
+      return res.status(404).json({ message: 'Juego no encontrado' });
+    }
+
+    res.status(200).json({ message: 'Juego eliminado con éxito' });
+  } catch (error) {
+    console.error('Error deleting game:', error);
+    res.status(500).json({ message: 'Error deleting game', error: error.message });
+  }
+});
 
 export default router;

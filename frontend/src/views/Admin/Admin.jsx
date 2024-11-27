@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const Admin = () => {
-  const [games, setGames] = useState([]); // Aquí almacenamos los juegos
-  const [selectedGame, setSelectedGame] = useState(null); // Juego seleccionado para editar
-  const [inputValue, setInputValue] = useState('');
-
-  // Estado para el formulario
+  const [games, setGames] = useState([]);
+  const [selectedGame, setSelectedGame] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     genre: '',
@@ -20,37 +17,25 @@ const Admin = () => {
     downloadLink: '',
   });
 
-  // Recuperamos los juegos desde el localStorage cuando el componente se monta
   useEffect(() => {
-    const savedGames = JSON.parse(localStorage.getItem('games')) || [];
-    setGames(savedGames);
-  
-    // Si tienes un backend, también puedes hacer una solicitud para obtener los juegos
     const fetchGames = async () => {
-      const response = await fetch('http://localhost:5000/api/games');
-      const data = await response.json();
-      setGames(data);
+      try {
+        const response = await fetch('http://localhost:5000/api/games');
+        const data = await response.json();
+        setGames(data);
+      } catch (error) {
+        console.error('Error al obtener los juegos:', error);
+      }
     };
-  
+
     fetchGames();
   }, []);
 
-  // Guardamos los juegos en localStorage cada vez que la lista cambie
-  useEffect(() => {
-    if (games.length > 0) {
-      localStorage.setItem('games', JSON.stringify(games));
-    } else {
-      localStorage.removeItem('games'); // Limpiar si no hay juegos
-    }
-  }, [games]);
-
-  // Maneja los cambios de entrada
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Maneja el cambio de archivos
   const handleFileChange = (e, field) => {
     if (field === 'gallery') {
       setFormData({ ...formData, gallery: Array.from(e.target.files) });
@@ -59,7 +44,6 @@ const Admin = () => {
     }
   };
 
-  // Maneja los cambios en los requisitos del juego
   const handleRequirementChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -82,33 +66,26 @@ const Admin = () => {
       requirements: { gpu: '', ram: '', cpu: '' },
       downloadLink: '',
     });
+    setSelectedGame(null);
   };
 
-  // Maneja el envío del formulario (Agregar/Editar juego)
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formPayload = new FormData();
-    formPayload.append('title', formData.title);
-    formPayload.append('genre', formData.genre);
-    formPayload.append('releaseYear', formData.releaseYear);
-    formPayload.append('weight', formData.weight);
-    formPayload.append('developer', formData.developer);
-    formPayload.append('description', formData.description);
-    formPayload.append('youtubeUrl', formData.youtubeUrl);
-    formPayload.append('downloadLink', formData.downloadLink);
-    formPayload.append('requirements[gpu]', formData.requirements.gpu);
-    formPayload.append('requirements[ram]', formData.requirements.ram);
-    formPayload.append('requirements[cpu]', formData.requirements.cpu);
 
-    if (formData.image) {
-      formPayload.append('image', formData.image);
-    }
-    if (formData.gallery.length > 0) {
-      formData.gallery.forEach((file, index) =>
-        formPayload.append(`gallery[${index}]`, file)
-      );
-    }
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === 'requirements') {
+        Object.entries(value).forEach(([reqKey, reqValue]) => {
+          formPayload.append(`requirements[${reqKey}]`, reqValue);
+        });
+      } else if (key === 'gallery' && value.length > 0) {
+        value.forEach((file, index) =>
+          formPayload.append(`gallery[${index}]`, file)
+        );
+      } else if (value) {
+        formPayload.append(key, value);
+      }
+    });
 
     try {
       const response = await fetch(
@@ -123,67 +100,54 @@ const Admin = () => {
 
       const data = await response.json();
       if (selectedGame) {
-        setGames((prev) =>
-          prev.map((game) => (game._id === data._id ? data : game))
+        setGames((prevGames) =>
+          prevGames.map((game) => (game._id === data._id ? data : game))
         );
       } else {
         setGames([...games, data]);
       }
-      setSelectedGame(null);
+
       resetForm();
     } catch (error) {
       console.error('Error al enviar los datos del juego:', error);
     }
   };
-  
 
-  // Maneja la eliminación de un juego
   const handleDelete = async (gameId) => {
     try {
-      // Eliminar del backend
       const response = await fetch(`http://localhost:5000/api/games/${gameId}`, {
         method: 'DELETE',
       });
-  
+
       if (response.ok) {
-        // Si la eliminación fue exitosa, actualiza el estado local
         setGames((prevGames) => prevGames.filter((game) => game._id !== gameId));
-      } else {
-        console.error('Error al eliminar el juego del backend.');
       }
     } catch (error) {
-      console.error('Error en la solicitud DELETE:', error);
+      console.error('Error al eliminar el juego:', error);
     }
   };
 
-  // Maneja la edición de un juego (rellena el formulario)
   const handleEdit = (game) => {
-    console.log('Juego seleccionado para editar:', game);
-    setSelectedGame(game); // Establecer juego seleccionado para editar
+    setSelectedGame(game);
     setFormData({
       title: game.title || '',
       genre: game.genre || '',
       releaseYear: game.releaseYear || '',
       weight: game.weight || '',
-      image: game.image || null,
+      image: null,
       developer: game.developer || '',
       description: game.description || '',
       youtubeUrl: game.youtubeUrl || '',
-      gallery: game.gallery || [],
+      gallery: [],
       requirements: game.requirements || { gpu: '', ram: '', cpu: '' },
       downloadLink: game.downloadLink || '',
-    }); // Rellenar los campos con los datos del juego
-
-    console.log(formData);
+    });
   };
-
-
-
   return (
     <div className="admin-container">
       <h1 className="text-3xl mb-4 text-center text-white font-bold mt-4">Gestión de Juegos</h1>
 
-      {/* Formulario de juego */}
+      {/* Formulario */}
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-6 bg-white shadow-md rounded-md p-6">
         <h2 className="text-2xl font-bold mb-4">{selectedGame ? 'Editar Juego' : 'Agregar Juego'}</h2>
 
@@ -380,16 +344,12 @@ const Admin = () => {
           </button>
         </div>
       </form>
-
       {/* Listado de juegos */}
       <div className="mt-6">
         <h2 className="text-xl font-bold mb-4">Juegos Agregados</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {games.map((game) => (
-            <div
-              key={game.title}
-              className="border border-gray-300 p-4 rounded-md shadow-sm"
-            >
+            <div key={game._id} className="border border-gray-300 p-4 rounded-md shadow-sm">
               <h3 className="text-lg font-semibold">{game.title}</h3>
               <p>{game.genre}</p>
               <div className="flex justify-between mt-2">
