@@ -22,7 +22,6 @@ router.post('/', upload.single('image'), async (req, res) => {
   try {
     const { title, genre, releaseYear, rating, description, weight } = req.body;
 
-    // Verificación de datos necesarios
     if (!title || !genre || !releaseYear || !weight) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -45,14 +44,55 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// Obtener todos los juegos
+// Obtener todos los juegos con filtros opcionales
 router.get('/', async (req, res) => {
   try {
-    const games = await Game.find();
+    const {
+      title,
+      genre,
+      minReleaseYear,
+      maxReleaseYear,
+      minRating,
+      maxRating,
+      developer,
+      minWeight,
+      maxWeight,
+    } = req.query;
+
+    const filter = {};
+
+    if (title) filter.title = { $regex: title, $options: 'i' };
+    if (genre) filter.genre = genre;
+    if (developer) filter.developer = { $regex: developer, $options: 'i' };
+    if (minReleaseYear) filter.releaseYear = { ...filter.releaseYear, $gte: Number(minReleaseYear) };
+    if (maxReleaseYear) filter.releaseYear = { ...filter.releaseYear, $lte: Number(maxReleaseYear) };
+    if (minRating) filter.rating = { ...filter.rating, $gte: Number(minRating) };
+    if (maxRating) filter.rating = { ...filter.rating, $lte: Number(maxRating) };
+    if (minWeight) filter.weight = { ...filter.weight, $gte: Number(minWeight) };
+    if (maxWeight) filter.weight = { ...filter.weight, $lte: Number(maxWeight) };
+
+    const games = await Game.find(filter);
     res.status(200).json(games);
   } catch (error) {
     console.error('Error fetching games:', error);
     res.status(500).json({ message: 'Error fetching games', error: error.message });
+  }
+});
+
+// Obtener juegos por categoría
+router.get('/category/:genre', async (req, res) => {
+  try {
+    const { genre } = req.params;
+    const games = await Game.find({ genre });
+
+    if (games.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron juegos para esta categoría' });
+    }
+
+    res.status(200).json(games);
+  } catch (error) {
+    console.error('Error fetching games by category:', error);
+    res.status(500).json({ message: 'Error fetching games by category', error: error.message });
   }
 });
 
@@ -68,7 +108,6 @@ router.put(
       const gameId = req.params.id;
       const updatedData = { ...req.body };
 
-      // Manejo de archivos recibidos
       if (req.files.image) {
         updatedData.image = req.files.image[0].path;
       }
@@ -77,7 +116,7 @@ router.put(
       }
 
       const updatedGame = await Game.findByIdAndUpdate(gameId, updatedData, {
-        new: true, // Devolver el documento actualizado
+        new: true,
       });
 
       if (!updatedGame) {

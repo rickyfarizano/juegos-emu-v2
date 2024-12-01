@@ -1,102 +1,116 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim() !== '') {
+      navigate(`/search?search=${searchTerm}`); // Redirige a la vista de búsqueda
+      setSearchTerm(''); // Limpia el input después de la búsqueda
+    }
   };
 
   return (
-    <header className="bg-blue-800 text-white shadow-md">
-      <div className="container mx-auto px-4 py-4">
-        <nav className="flex justify-between items-center">
-          {/* Logo */}
-          <div className="text-2xl font-bold">
-            <NavLink to="/" className="hover:text-gray-400">
-              Juegos Emu
+    <header className="bg-blue-700 text-white p-4 flex justify-between items-center">
+      <h1 className="text-3xl font-bold">Juegos Emu</h1>
+      
+      <nav>
+        <ul className="flex gap-6 items-center">
+          {/* Links principales */}
+          <li>
+            <NavLink to="/" className="hover:text-gray-200">
+              Home
             </NavLink>
-          </div>
+          </li>
+          <li>
+            <NavLink to="/gameList" className="hover:text-gray-200">
+              Juegos
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/developers" className="hover:text-gray-200">
+              Desarrolladores
+            </NavLink>
+          </li>
 
-          {/* Icono de menú para dispositivos móviles */}
-          <button
-            className="text-white md:hidden focus:outline-none"
-            onClick={toggleMenu}
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+          {/* Menú desplegable de categorías */}
+          <li className="relative">
+            <button
+              onClick={toggleDropdown}
+              className="hover:text-gray-200 flex items-center"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              ></path>
-            </svg>
-          </button>
+              Categorías
+              <svg
+                className="w-4 h-4 ml-1"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            {isDropdownOpen && (
+              <ul className="absolute top-full left-0 mt-2 w-48 bg-blue-800 text-white rounded-md shadow-lg z-10">
+                {[
+                  'Acción',
+                  'Aventura',
+                  'Anime',
+                  'Horror',
+                  'Indie',
+                  'Multiplayer',
+                  'Open World',
+                  'Racing',
+                  'Shooters',
+                  'Simulation',
+                  'Sports',
+                  'Strategy',
+                  'Virtual Reality',
+                ].map((category) => (
+                  <li key={category} className="hover:bg-blue-600">
+                    <NavLink
+                      to={`/category/${category}`}
+                      className="block px-4 py-2"
+                    >
+                      {category}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
 
-          {/* Menú */}
-          <ul
-            className={`flex flex-col md:flex-row md:space-x-6 absolute md:static bg-blue-700 md:bg-transparent w-full md:w-auto left-0 top-16 md:top-0 transition-transform duration-300 ease-in-out ${
-              isMenuOpen ? 'translate-y-0' : '-translate-y-full md:translate-y-0'
-            }`}
-          >
-            <li className="border-b md:border-none">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  isActive
-                    ? 'text-blue-400 font-semibold block py-2 md:py-0'
-                    : 'hover:text-gray-400 block py-2 md:py-0'
-                }
+          {/* Buscador */}
+          <li>
+            <form onSubmit={handleSearch} className="flex items-center">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar juegos..."
+                className="px-2 py-1 rounded-l-md text-black"
+              />
+              <button
+                type="submit"
+                className="bg-blue-600 px-3 py-1 rounded-r-md hover:bg-blue-500"
               >
-                Home
-              </NavLink>
-            </li>
-            <li className="border-b md:border-none">
-              <NavLink
-                to="/gameList"
-                className={({ isActive }) =>
-                  isActive
-                    ? 'text-blue-400 font-semibold block py-2 md:py-0'
-                    : 'hover:text-gray-400 block py-2 md:py-0'
-                }
-              >
-                Games
-              </NavLink>
-            </li>
-            <li className="border-b md:border-none">
-              <NavLink
-                to="/developers"
-                className={({ isActive }) =>
-                  isActive
-                    ? 'text-blue-400 font-semibold block py-2 md:py-0'
-                    : 'hover:text-gray-400 block py-2 md:py-0'
-                }
-              >
-                Developers
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/categories"
-                className={({ isActive }) =>
-                  isActive
-                    ? 'text-blue-400 font-semibold block py-2 md:py-0'
-                    : 'hover:text-gray-400 block py-2 md:py-0'
-                }
-              >
-                Categories
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
-      </div>
+                Buscar
+              </button>
+            </form>
+          </li>
+        </ul>
+      </nav>
     </header>
   );
 };

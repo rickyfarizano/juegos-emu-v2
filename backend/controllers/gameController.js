@@ -12,7 +12,31 @@ export const createGame = async (req, res) => {
 
 export const getAllGames = async (req, res) => {
   try {
-    const games = await Game.find().populate('developer');
+    const {
+      title,
+      genre,
+      minReleaseYear,
+      maxReleaseYear,
+      minRating,
+      maxRating,
+      developer,
+      minWeight,
+      maxWeight,
+    } = req.query;
+
+    const filter = {};
+
+    if (title) filter.title = { $regex: title, $options: 'i' };
+    if (genre) filter.genre = genre;
+    if (developer) filter.developer = { $regex: developer, $options: 'i' };
+    if (minReleaseYear) filter.releaseYear = { ...filter.releaseYear, $gte: Number(minReleaseYear) };
+    if (maxReleaseYear) filter.releaseYear = { ...filter.releaseYear, $lte: Number(maxReleaseYear) };
+    if (minRating) filter.rating = { ...filter.rating, $gte: Number(minRating) };
+    if (maxRating) filter.rating = { ...filter.rating, $lte: Number(maxRating) };
+    if (minWeight) filter.weight = { ...filter.weight, $gte: Number(minWeight) };
+    if (maxWeight) filter.weight = { ...filter.weight, $lte: Number(maxWeight) };
+
+    const games = await Game.find(filter).populate('developer');
     res.json(games);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching games', error });
@@ -35,7 +59,7 @@ export const updateGame = async (req, res) => {
   try {
     const updatedGame = await Game.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
     if (!updatedGame) {
       return res.status(404).json({ message: 'Game not found' });

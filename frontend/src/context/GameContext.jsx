@@ -5,19 +5,25 @@ const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
   const [games, setGames] = useState([]);
+  const [categories, setCategories] = useState([]); // Agregar el estado de categorías
 
-  // Cargar juegos desde MongoDB al montar el componente
+  // Cargar juegos y categorías desde MongoDB al montar el componente
   useEffect(() => {
-    const fetchGames = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/games'); // Reemplaza con tu endpoint real
-        setGames(response.data); // Actualizar el estado con los juegos obtenidos
+        // Cargar juegos
+        const gamesResponse = await axios.get('http://localhost:5000/api/games'); // Reemplaza con tu endpoint real
+        setGames(gamesResponse.data);
+
+        // Cargar categorías
+        const categoriesResponse = await axios.get('http://localhost:5000/api/categories'); // Reemplaza con tu endpoint real
+        setCategories(categoriesResponse.data);
       } catch (error) {
-        console.error('Error fetching games:', error);
+        console.error('Error fetching games or categories:', error);
       }
     };
 
-    fetchGames();
+    fetchData();
   }, []);
 
   // Método para agregar un juego
@@ -30,8 +36,14 @@ export const GameProvider = ({ children }) => {
     }
   };
 
+  // Función para obtener el nombre de la categoría por ID
+  const getCategoryName = (categoryId) => {
+    const category = categories.find((cat) => cat._id === categoryId);
+    return category ? category.name : 'Unknown Category';
+  };
+
   return (
-    <GameContext.Provider value={{ games, addGame }}>
+    <GameContext.Provider value={{ games, categories, addGame, getCategoryName }}>
       {children}
     </GameContext.Provider>
   );
