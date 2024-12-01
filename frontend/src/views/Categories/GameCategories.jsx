@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGameContext } from '../../context/GameContext'; // Accedemos al contexto
+import { useGameContext } from '../../context/GameContext'; // Accedemos al contexto de juegos
 import GameCard from '../../components/GameCard/GameCard'; // Componente de tarjeta de juegos
 
 const GameCategories = () => {
@@ -31,7 +31,8 @@ const GameCategories = () => {
     : 'Juegos';
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col items-start p-4">
+      {/* Título de la categoría */}
       <h1 className="text-3xl font-bold text-blue-700 text-center">
         {`Juegos de ${genreTitle}`}
       </h1>
@@ -39,10 +40,12 @@ const GameCategories = () => {
       {isLoading ? (
         <p className="text-center mt-4">Cargando juegos...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 m-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-4">
           {filteredGames.length > 0 ? (
             filteredGames.map((game) => (
-              <GameCard key={game._id} game={game} />
+              <div key={game._id} className="transition-opacity duration-500 opacity-100">
+                <GameCard game={game} />
+              </div>
             ))
           ) : (
             <p className="text-center text-red-500 col-span-full">

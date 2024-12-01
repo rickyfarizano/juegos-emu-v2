@@ -18,6 +18,10 @@ const Header = () => {
     }
   };
 
+  const handleCategoryClick = () => {
+    setDropdownOpen(false); // Cierra el menú al seleccionar una categoría
+  };
+
   return (
     <header className="bg-blue-700 text-white p-4 flex justify-between items-center">
       <h1 className="text-3xl font-bold">Juegos Emu</h1>
@@ -75,7 +79,6 @@ const Header = () => {
                   'Racing',
                   'Shooters',
                   'Simulation',
-                  
                   'Strategy',
                   'Virtual Reality',
                 ].map((category) => (
@@ -83,6 +86,7 @@ const Header = () => {
                     <NavLink
                       to={`/category/${category}`}
                       className="block px-4 py-2"
+                      onClick={handleCategoryClick} // Cierra el dropdown al hacer clic en la categoría
                     >
                       {category}
                     </NavLink>

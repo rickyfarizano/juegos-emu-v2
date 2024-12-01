@@ -12,11 +12,16 @@ const GameList = () => {
   }, [games]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 m-4">
-      {/* Mapeamos los juegos para crear GameCard por cada juego */}
-      {newGames.map((game) => (
-        <GameCard key={game._id} game={game} />
-      ))}
+    <div className="min-h-screen flex flex-col items-start p-4">
+      {/* Contenedor para los juegos alineado al inicio */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+        {/* Mapeamos los juegos para crear GameCard por cada juego */}
+        {newGames.map((game) => (
+          <div key={game._id} className="transition-opacity duration-500 opacity-100">
+            <GameCard game={game} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
