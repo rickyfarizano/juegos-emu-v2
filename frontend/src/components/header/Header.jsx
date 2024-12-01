@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 
 const Header = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -111,6 +111,9 @@ const Header = () => {
             </form>
           </li>
         </ul>
+
+        <Link to="/login">Iniciar sesion</Link>
+        <Link to="/register">Registrarse</Link>
       </nav>
     </header>
   );

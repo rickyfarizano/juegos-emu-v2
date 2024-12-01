@@ -9,6 +9,8 @@ import GameDetails from './views/GameDetails/GameDetails';
 import GameCategories from './views/Categories/GameCategories'; // Actualizamos esta ruta
 import Admin from './views/Admin/Admin';
 import AbmDevelopers from './views/AbmDevelopers/AbmDevelopers';
+import Login from './views/Login/Login';
+import Register from './views/Register/Register';
 import { GameProvider } from './context/GameContext';
 import { DeveloperProvider } from './context/DeveloperContext';
 import SearchResults from './views/SearchResults/SearchResults';
@@ -36,6 +38,8 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/search" element={<SearchResults />} /> 
           <Route path="/admin/developers" element={<AbmDevelopers />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
         <Footer />
       </DeveloperProvider>
