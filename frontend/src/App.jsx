@@ -34,6 +34,7 @@ function App() {
           {/* Rutas de los desarrolladores y administración */}
           <Route path="/developers" element={<Developers />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/search" element={<SearchResults />} /> 
           <Route path="/admin/developers" element={<AbmDevelopers />} />
         </Routes>
         <Footer />

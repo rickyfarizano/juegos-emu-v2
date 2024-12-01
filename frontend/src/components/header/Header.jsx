@@ -66,15 +66,16 @@ const Header = () => {
                 {[
                   'Acción',
                   'Aventura',
-                  'Anime',
+                  'RPG',
+                  'Deportes',
                   'Horror',
-                  'Indie',
+                  'FPS',
                   'Multiplayer',
                   'Open World',
                   'Racing',
                   'Shooters',
                   'Simulation',
-                  'Sports',
+                  
                   'Strategy',
                   'Virtual Reality',
                 ].map((category) => (
