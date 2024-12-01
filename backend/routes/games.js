@@ -8,10 +8,10 @@ const router = express.Router();
 // Configuración de multer para manejar archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'uploads/'); // Define la carpeta para los archivos subidos
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, Date.now() + '-' + file.originalname); // Nombre único para el archivo
   },
 });
 
@@ -20,26 +20,61 @@ const upload = multer({ storage });
 // Crear un nuevo juego
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-    const { title, genre, releaseYear, rating, description, weight } = req.body;
+    // Extracción de datos del body de la solicitud
+    const {
+      title,
+      genre,
+      releaseYear,
+      rating,
+      description,
+      weight,
+      developer,
+      youtubeUrl,
+      requirements,
+      downloadLink,
+    } = req.body;
 
+    // Verificación de datos necesarios
     if (!title || !genre || !releaseYear || !weight) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    // Verificación y asignación de los requisitos (si existen)
+    const parsedRequirements = requirements ? requirements : {}; // No es necesario usar JSON.parse si ya es un objeto
+
+    // Asegurarse de que releaseYear y weight sean números válidos
+    const releaseYearNum = releaseYear ? Number(releaseYear) : null;
+    const weightNum = weight ? Number(weight) : null;
+
+    // Crear un nuevo objeto de juego
     const newGame = new Game({
       title,
       genre,
-      releaseYear: Number(releaseYear),
-      weight: Number(weight),
+      releaseYear: releaseYearNum,
+      weight: weightNum,
       rating: rating ? Number(rating) : null,
       description,
-      image: req.file ? req.file.path : null,
+      image: req.file ? req.file.path : null, // Si existe una imagen, se guarda su ruta
+      developer,
+      youtubeUrl,
+      requirements: {
+        gpu: parsedRequirements.gpu || null,
+        ram: parsedRequirements.ram || null,
+        cpu: parsedRequirements.cpu || null,
+      },
+      downloadLink,
     });
 
+    // Guardar el nuevo juego en la base de datos
     await newGame.save();
-    res.status(201).json(newGame);
+    res.status(201).json(newGame); // Enviar la respuesta con el juego creado
   } catch (error) {
-    console.error('Error creating game:', error);
+    // Manejo de errores
+    if (error.name === 'ValidationError') {
+      console.error('Validation Error:', error.message);
+      return res.status(400).json({ message: 'Validation Error', details: error.errors });
+    }
+    console.error('Error creating game:', error.message);
     res.status(500).json({ message: 'Error creating game', error: error.message });
   }
 });
@@ -47,31 +82,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 // Obtener todos los juegos con filtros opcionales
 router.get('/', async (req, res) => {
   try {
-    const {
-      title,
-      genre,
-      minReleaseYear,
-      maxReleaseYear,
-      minRating,
-      maxRating,
-      developer,
-      minWeight,
-      maxWeight,
-    } = req.query;
-
-    const filter = {};
-
-    if (title) filter.title = { $regex: title, $options: 'i' };
-    if (genre) filter.genre = genre;
-    if (developer) filter.developer = { $regex: developer, $options: 'i' };
-    if (minReleaseYear) filter.releaseYear = { ...filter.releaseYear, $gte: Number(minReleaseYear) };
-    if (maxReleaseYear) filter.releaseYear = { ...filter.releaseYear, $lte: Number(maxReleaseYear) };
-    if (minRating) filter.rating = { ...filter.rating, $gte: Number(minRating) };
-    if (maxRating) filter.rating = { ...filter.rating, $lte: Number(maxRating) };
-    if (minWeight) filter.weight = { ...filter.weight, $gte: Number(minWeight) };
-    if (maxWeight) filter.weight = { ...filter.weight, $lte: Number(maxWeight) };
-
-    const games = await Game.find(filter);
+    const games = await Game.find();
     res.status(200).json(games);
   } catch (error) {
     console.error('Error fetching games:', error);
@@ -115,6 +126,7 @@ router.put(
         updatedData.gallery = req.files.gallery.map((file) => file.path);
       }
 
+      // Actualización del juego en la base de datos
       const updatedGame = await Game.findByIdAndUpdate(gameId, updatedData, {
         new: true,
       });
@@ -123,7 +135,7 @@ router.put(
         return res.status(404).json({ message: 'Juego no encontrado' });
       }
 
-      res.status(200).json(updatedGame);
+      res.status(200).json(updatedGame); // Enviar el juego actualizado
     } catch (error) {
       console.error('Error updating game:', error);
       res.status(500).json({ message: 'Error updating game', error: error.message });
@@ -141,7 +153,7 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Juego no encontrado' });
     }
 
-    res.status(200).json({ message: 'Juego eliminado con éxito' });
+    res.status(200).json({ message: 'Juego eliminado con éxito' }); // Respuesta al eliminar el juego
   } catch (error) {
     console.error('Error deleting game:', error);
     res.status(500).json({ message: 'Error deleting game', error: error.message });
