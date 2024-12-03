@@ -1,37 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import 'swiper/css/grid';
+import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
-import styles from './Carrousell.module.css';
-import { Grid, Pagination } from 'swiper/modules';
-import { useGameContext } from '../../context/GameContext'; // Importa el contexto
-import GameCard from '../GameCard/GameCard';
+import './Carrousell.module.css';
+
+import { FreeMode, Pagination } from 'swiper/modules';
+import { useGameContext } from '../../context/GameContext';
+import GameCard from '../GameCard/GameCard'; // Asegúrate de tener este componente
 
 const Carrousell = ({ genre }) => {
-  const { games } = useGameContext(); // Obtén todos los juegos del contexto
+  const { games } = useGameContext(); // Obtener juegos del contexto
   const [filteredGames, setFilteredGames] = useState([]);
 
   useEffect(() => {
-    // Filtrar los juegos por género
+    // Filtrar juegos por género
     const gamesByGenre = games.filter((game) => game.genre.toLowerCase() === genre.toLowerCase());
     setFilteredGames(gamesByGenre);
   }, [genre, games]);
 
   return (
-    <div className={styles.carouselContainer}>
+    <div className="carousel-container">
       {filteredGames.length > 0 ? (
         <Swiper
-          slidesPerView={3}
-          grid={{ rows: 2 }}
-          spaceBetween={30}
-          pagination={{ clickable: true }}
-          modules={[Grid, Pagination]}
-          className={styles.mySwiper}
+          slidesPerView={3}  // 3 juegos por fila
+          spaceBetween={-150}  // Menos espacio entre juegos (lo hemos reducido a -20px)
+          freeMode={true}
+          pagination={{
+            clickable: true,
+          }}
+          modules={[FreeMode, Pagination]}
+          className="mySwiper"
         >
           {filteredGames.map((game) => (
             <SwiperSlide key={game._id}>
-              <GameCard game={game} />
+              <div className="game-card"> {/* Aplica la clase game-card */}
+                <GameCard game={game} />
+              </div>
             </SwiperSlide>
           ))}
         </Swiper>

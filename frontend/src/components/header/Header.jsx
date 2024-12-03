@@ -23,7 +23,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-blue-700 text-white p-4 flex justify-between items-center">
+    <header className="bg-blue-700 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg">
       <h1 className="text-3xl font-bold">Juegos Emu</h1>
       
       <nav>

@@ -8,13 +8,7 @@
   
 }
 
-/* Centra cada slide */
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
+
 
 /* Estilo para las imágenes dentro de los slides */
 .slide-image {

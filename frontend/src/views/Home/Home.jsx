@@ -2,6 +2,7 @@ import React from 'react';
 import Slider from '../../components/Slider/Slider'; // Asegúrate de que el path sea correcto
 import './Home.css';
 import Carousel from '../../components/GameCarrousell/Carrousell.jsx'; // Asegúrate de que el path sea correcto
+import Carrousell from '../../components/GameCarrousell/Carrousell.jsx';
 
 const Home = () => {
   return (
@@ -19,7 +20,7 @@ const Home = () => {
             <h2 className="group-title">Acción</h2>
             <div className="container-groups">
               {/* Aquí va el Carousel para el género Acción */}
-              <Carousel genre="Acción" />
+              <Carrousell genre="Acción" />
             </div>
           </div>
 
@@ -28,7 +29,7 @@ const Home = () => {
             <h2 className="group-title">Aventura</h2>
             <div className="container-groups">
               {/* Aquí va el Carousel para el género Aventura */}
-              <Carousel genre="Aventura" />
+              <Carrousell genre="Aventura" />
             </div>
           </div>
 
@@ -37,7 +38,7 @@ const Home = () => {
             <h2 className="group-title">RPG</h2>
             <div className="container-groups">
               {/* Aquí va el Carousel para el género RPG */}
-              <Carousel genre="RPG" />
+              <Carrousell genre="RPG" />
             </div>
           </div>
 
