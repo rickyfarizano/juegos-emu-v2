@@ -49,6 +49,7 @@ app.use('/api/users', userRoutes); // Ruta de usuarios
 app.use('/api/developers', developerRoutes); // Ruta de desarrolladores
 app.use('/api/games', gameRoutes); // Ruta de juegos
 app.use('/api/categories', categoryRoutes); // Nueva ruta de categorías
+app.use('/api/users/login', userRoutes);
 
 // Ruta de prueba para asegurar que el servidor esté funcionando
 app.get('/api/test', (req, res) => {

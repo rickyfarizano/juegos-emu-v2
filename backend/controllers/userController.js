@@ -68,3 +68,30 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Error deleting user', error });
   }
 };
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
+
+    res.status(200).json({
+      message: 'Inicio de sesión exitoso',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email, // Devuelve solo los datos necesarios
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al iniciar sesión', error });
+  }
+};
