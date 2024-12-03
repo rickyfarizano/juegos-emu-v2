@@ -37,7 +37,12 @@ const Login = () => {
     try {
       // Supongamos que el endpoint para login es '/api/login'
       const response = await axios.post('http://localhost:5000/api/users/login', formData);
-
+      
+      // nuestro el token generado
+      if(response.data.token) {
+        console.log(response.data.token);
+      }
+      
       if (response.status === 200) {
         setSuccessMessage('¡Inicio de sesión exitoso!');
         setErrorMessage('');
