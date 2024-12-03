@@ -57,7 +57,7 @@ const Header = () => {
     <header className="bg-blue-700 text-white p-4 flex justify-between items-center">
       <h1 className="text-3xl font-bold">Juegos Emu</h1>
       
-      <nav>
+      <nav className='flex flex-row gap-4 justify-center items-center'>
         <ul className="flex gap-6 items-center">
           {/* Links principales */}
           <li>
@@ -136,30 +136,32 @@ const Header = () => {
           </li>
         </ul>
 
-        {/* Mostrar los botones según el estado de autenticación */}
-        {isAuthenticated ? (
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 px-4 py-2 rounded-md text-white hover:bg-red-700"
-          >
-            Cerrar sesión
-          </button>
-        ) : (
-          <>
-            <Link
-              to="/login"
-              className="bg-blue-600 px-4 py-2 rounded-md text-white hover:bg-blue-500"
+        <div className="btns">
+          {/* Mostrar los botones según el estado de autenticación */}
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 px-4 py-2 rounded-md text-white hover:bg-red-700"
             >
-              Iniciar sesión
-            </Link>
-            <Link
-              to="/register"
-              className="bg-green-600 px-4 py-2 rounded-md text-white hover:bg-green-500 ml-4"
-            >
-              Registrarse
-            </Link>
-          </>
-        )}
+              Cerrar sesión
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="bg-blue-600 px-4 py-2 rounded-md text-white hover:bg-blue-500"
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                to="/register"
+                className="bg-green-600 px-4 py-2 rounded-md text-white hover:bg-green-500 ml-4"
+              >
+                Registrarse
+              </Link>
+            </>
+          )}
+        </div>
       </nav>
     </header>
   );
