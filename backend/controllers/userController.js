@@ -1,5 +1,8 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const createUser = async (req, res) => {
   try {
@@ -66,5 +69,43 @@ export const deleteUser = async (req, res) => {
     res.json({ message: 'User deleted' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting user', error });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Buscar al usuario por correo
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
+
+    // Comparar la contraseña ingresada con la almacenada (hash)
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
+
+    // Generar el JWT (JSON Web Token)
+    const token = jwt.sign(
+      { id: user._id, name: user.name, email: user.email }, //payload
+      process.env.JWT_SECRET, 
+      { expiresIn: '5m' } // Expiración del token
+    );
+
+    // Devolver el token junto con la respuesta
+    res.status(200).json({
+      message: 'Inicio de sesión exitoso',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email, // Devuelve solo los datos necesarios
+      },
+      token, // Devuelve el JWT generado
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al iniciar sesión', error });
   }
 };

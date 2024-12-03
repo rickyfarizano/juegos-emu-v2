@@ -1,10 +1,35 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 
 const Header = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  // Función para verificar la autenticación
+  const checkAuthStatus = () => {
+    const token = localStorage.getItem('authToken');
+    setIsAuthenticated(!!token); // Si existe el token, el usuario está autenticado
+  };
+
+  // Efecto para verificar si hay un token al montar el componente
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  // Efecto para escuchar cambios en el localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      checkAuthStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -13,7 +38,7 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim() !== '') {
-      navigate(`/search?search=${searchTerm}`); // Redirige a la vista de búsqueda
+      navigate(`/search?search=${searchTerm}`);
       setSearchTerm(''); // Limpia el input después de la búsqueda
     }
   };
@@ -22,11 +47,17 @@ const Header = () => {
     setDropdownOpen(false); // Cierra el menú al seleccionar una categoría
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken'); // Eliminar el token
+    setIsAuthenticated(false); // Actualiza el estado de autenticación
+    navigate('/login'); // Redirigir a la página de login
+  };
+
   return (
     <header className="bg-blue-700 text-white p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg">
       <h1 className="text-3xl font-bold">Juegos Emu</h1>
       
-      <nav>
+      <nav className='flex flex-row gap-4 justify-center items-center'>
         <ul className="flex gap-6 items-center">
           {/* Links principales */}
           <li>
@@ -68,19 +99,8 @@ const Header = () => {
             {isDropdownOpen && (
               <ul className="absolute top-full left-0 mt-2 w-48 bg-blue-800 text-white rounded-md shadow-lg z-10">
                 {[
-                  'Acción',
-                  'Aventura',
-                  'RPG',
-                  'Deportes',
-                  'Horror',
-                  'FPS',
-                  'Multiplayer',
-                  'Open World',
-                  'Racing',
-                  'Shooters',
-                  'Simulation',
-                  'Strategy',
-                  'Virtual Reality',
+                  'Acción', 'Aventura', 'RPG', 'Deportes', 'Horror', 'FPS', 'Multiplayer',
+                  'Open World', 'Racing', 'Shooters', 'Simulation', 'Strategy', 'Virtual Reality',
                 ].map((category) => (
                   <li key={category} className="hover:bg-blue-600">
                     <NavLink
@@ -115,6 +135,33 @@ const Header = () => {
             </form>
           </li>
         </ul>
+
+        <div className="btns">
+          {/* Mostrar los botones según el estado de autenticación */}
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 px-4 py-2 rounded-md text-white hover:bg-red-700"
+            >
+              Cerrar sesión
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="bg-blue-600 px-4 py-2 rounded-md text-white hover:bg-blue-500"
+              >
+                Iniciar sesión
+              </Link>
+              <Link
+                to="/register"
+                className="bg-green-600 px-4 py-2 rounded-md text-white hover:bg-green-500 ml-4"
+              >
+                Registrarse
+              </Link>
+            </>
+          )}
+        </div>
       </nav>
     </header>
   );
