@@ -12,4 +12,5 @@ router.get('/name/:name', getUserByName);
 router.put('/name/:name', updateUser);
 router.delete('/name/:name', deleteUser);
 
+
 export default router;

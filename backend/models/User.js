@@ -19,11 +19,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-<<<<<<< HEAD
-    enum: ['user', 'admin-game', 'admin-dev', 'super-admin'],
-=======
     enum: ['user', 'admin', 'super-admin', 'admin-dev', 'admin-game'],
->>>>>>> 7365b7669a0362358a77d4fe1e3d9392670d0c5c
     default: 'user'
   },
   createdAt: {
