@@ -374,14 +374,14 @@ const Admin = () => {
         </div>
       </form>
       {/* Listado de juegos */}
-      <div className="mt-6">
-        <h2 className="text-xl font-bold mb-4">Juegos Agregados</h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-6 p-4">
+        <h2 className="text-xl font-bold mb-4 text-white underline decoration-2">Juegos Agregados</h2>
+        <div className="flex flex-col gap-3">
           {games.map((game) => (
-            <div key={game._id} className="border border-gray-300 p-4 rounded-md shadow-sm">
+            <div key={game._id} className="border border-gray-300 p-4 rounded-md shadow-sm bg-white rounded">
               <h3 className="text-lg font-semibold">{game.title}</h3>
               <p>{game.genre}</p>
-              <div className="flex justify-between mt-2">
+              <div className="flex justify-center align-center mt-2 flex-col gap-2">
                 <button
                   onClick={() => handleEdit(game)}
                   className="px-2 py-1 text-white bg-yellow-500 rounded-md hover:bg-yellow-700"
