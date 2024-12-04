@@ -13,7 +13,7 @@ const router = express.Router();
 // Configuración de multer para manejar archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Define la carpeta para los archivos subidos
+    cb(null, 'uploads/'); // Definimos la carpeta para los archivos subidos
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname); // Nombre único para el archivo
