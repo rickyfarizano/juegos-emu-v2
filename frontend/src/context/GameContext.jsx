@@ -5,9 +5,8 @@ const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
   const [games, setGames] = useState([]);
-  const [categories, setCategories] = useState([]); // Agregar el estado de categorías
+  const [categories, setCategories] = useState([]);
 
-  // Cargar juegos y categorías desde MongoDB al montar el componente
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,11 +25,10 @@ export const GameProvider = ({ children }) => {
     fetchData();
   }, []);
 
-  // Método para agregar un juego
   const addGame = async (game) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/games', game); // Reemplaza con tu lógica de backend
-      setGames((prevGames) => [...prevGames, response.data]); // Actualizar el estado con el nuevo juego
+      const response = await axios.post('http://localhost:5000/api/games', game); 
+      setGames((prevGames) => [...prevGames, response.data]); 
     } catch (error) {
       console.error('Error adding game:', error);
     }

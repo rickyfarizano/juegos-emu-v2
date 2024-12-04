@@ -7,7 +7,7 @@ import GameList from './views/GameList/GameList';
 import Developers from './views/Developers/Developers';
 import DeveloperDetails from './views/DeveloperDetails/DeveloperDetails';
 import GameDetails from './views/GameDetails/GameDetails';
-import GameCategories from './views/Categories/GameCategories'; // Actualizamos esta ruta
+import GameCategories from './views/Categories/GameCategories';
 import Admin from './views/Admin/Admin';
 import AbmDevelopers from './views/AbmDevelopers/AbmDevelopers';
 import Login from './views/Login/Login';
@@ -23,7 +23,6 @@ function App() {
       <DeveloperProvider>
         <Header />
         <Routes>
-          {/* Ruta principal */}
           <Route path="/" element={<Home />} />
 
           {/* Rutas para los juegos */}

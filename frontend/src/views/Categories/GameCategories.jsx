@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGameContext } from '../../context/GameContext'; // Accedemos al contexto de juegos
-import GameCard from '../../components/GameCard/GameCard'; // Componente de tarjeta de juegos
+import { useGameContext } from '../../context/GameContext';
+import GameCard from '../../components/GameCard/GameCard';
 
 const GameCategories = () => {
-  const { genre } = useParams(); // Obtenemos el género de la URL
-  const { games } = useGameContext(); // Accedemos al contexto de juegos
+  const { genre } = useParams();
+  const { games } = useGameContext();
   const [filteredGames, setFilteredGames] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const filterGamesByGenre = () => {
-      setIsLoading(true); // Inicia la carga
+      setIsLoading(true);
       if (genre) {
         const filtered = games.filter((game) => 
           game.genre.toLowerCase() === genre.toLowerCase()
         );
         setFilteredGames(filtered);
       } else {
-        setFilteredGames(games); // Si no hay género, mostramos todos
+        setFilteredGames(games);
       }
-      setIsLoading(false); // Finaliza la carga
+      setIsLoading(false);
     };
 
     filterGamesByGenre();
@@ -32,7 +32,6 @@ const GameCategories = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-start p-4">
-      {/* Título de la categoría */}
       <h1 className="text-3xl font-bold text-blue-700 text-center">
         {`Juegos de ${genreTitle}`}
       </h1>

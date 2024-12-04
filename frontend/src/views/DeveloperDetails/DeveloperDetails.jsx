@@ -5,16 +5,14 @@ import { useGameContext } from '../../context/GameContext';
 import GameCard from '../../components/GameCard/GameCard';
 
 const DeveloperDetails = () => {
-  const { id } = useParams(); // Obtener el id de la URL
+  const { id } = useParams();
   const { games } = useGameContext();
   const { developers } = useDeveloperContext();
 
-  // Encontrar el developer con el id de la URL
   const developer = useMemo(() => {
     return developers.find((dev) => dev._id === id);
   }, [developers, id]);
 
-  // Filtrar los juegos relacionados con este developer
   const developerGames = useMemo(() => {
     return games.filter((game) => game.developer === developer?.name);
   }, [games, developer]);

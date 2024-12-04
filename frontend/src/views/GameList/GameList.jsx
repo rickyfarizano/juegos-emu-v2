@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useGameContext } from '../../context/GameContext'; // Accedemos al contexto
-import GameCard from '../../components/GameCard/GameCard'; // Importamos el componente GameCard
+import { useGameContext } from '../../context/GameContext';
+import GameCard from '../../components/GameCard/GameCard';
 import './GameList.css';
 
 const GameList = () => {
-  const { games } = useGameContext(); // Extraemos los juegos desde el contexto
+  const { games } = useGameContext();
   const [newGames, setNewGames] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const gamesPerPage = 5; // Número de juegos por página
+  const [currentPage, setCurrentPage] = useState(1);
+  const gamesPerPage = 5;
 
   // Sincronizamos los juegos desde el contexto con el estado local
   useEffect(() => {
@@ -30,7 +30,7 @@ const GameList = () => {
   // Generar las páginas visibles para mostrar
   const generatePageNumbers = () => {
     const pageNumbers = [];
-    const maxVisiblePages = 5; // Máximo de botones visibles
+    const maxVisiblePages = 5;
 
     let startPage = Math.max(currentPage - Math.floor(maxVisiblePages / 2), 1);
     let endPage = startPage + maxVisiblePages - 1;
@@ -50,7 +50,6 @@ const GameList = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-start p-4">
-      {/* Contenedor de los juegos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         {currentGames.map((game) => (
           <div key={game._id} className="transition-opacity duration-500 opacity-100">
@@ -61,16 +60,14 @@ const GameList = () => {
 
       {/* Paginación */}
       <div className="pagination-container flex items-center justify-center mt-6">
-        {/* Botón anterior */}
         <button
           className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          &#8592; {/* Flecha hacia atrás */}
+          &#8592; 
         </button>
 
-        {/* Números de página */}
         {pageNumbers.map((pageNumber) => (
           <button
             key={pageNumber}
@@ -81,12 +78,10 @@ const GameList = () => {
           </button>
         ))}
 
-        {/* Puntos suspensivos */}
         {pageNumbers[pageNumbers.length - 1] < totalPages && (
           <span className="pagination-dots">...</span>
         )}
 
-        {/* Última página */}
         {pageNumbers[pageNumbers.length - 1] < totalPages && (
           <button
             className={`pagination-button`}
@@ -96,13 +91,12 @@ const GameList = () => {
           </button>
         )}
 
-        {/* Botón siguiente */}
         <button
           className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          &#8594; {/* Flecha hacia adelante */}
+          &#8594;
         </button>
       </div>
     </div>

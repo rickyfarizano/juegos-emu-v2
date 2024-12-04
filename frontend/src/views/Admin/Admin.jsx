@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDeveloperContext } from '../../context/DeveloperContext';
-import { useAuth } from '../../context/AuthContext'; // Importando AuthContext
+import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 const Admin = () => {
@@ -21,18 +21,6 @@ const Admin = () => {
     downloadLink: '',
   });
 
-/*   // Verificación de roles
-  const isAuthorized =
-    hasRole('super-admin') || hasRole('admin') || hasRole('admin-game');
-
-  console.log('Is Authorized:', isAuthorized); // Ver si el usuario tiene un rol autorizado
-
-  // Si el usuario no está autorizado, redirigir a "unauthorized"
-  if (!isAuthorized) {
-    return <Navigate to="/unauthorized" replace />;
-  }
- */
-
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -48,7 +36,7 @@ const Admin = () => {
       requirements,
     } = formData;
   
-    const newErrors = {}; // Usamos un objeto para almacenar los errores
+    const newErrors = {};
   
     if (!title) {
       newErrors.title = 'El campo título no puede estar vacío.';
@@ -73,11 +61,11 @@ const Admin = () => {
     }
   
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors); // Establecemos todos los errores de una vez
+      setErrors(newErrors);
       return false;
     }
   
-    setErrors({}); // Limpiamos los errores si todo es válido
+    setErrors({});
     return true;
   };
 
@@ -95,7 +83,6 @@ const Admin = () => {
     fetchGames();
   }, []);
 
-  // Manejo de formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -183,11 +170,11 @@ const Admin = () => {
       }
 
       resetForm();
-      setSuccessMessage(selectedGame ? 'Juego actualizado con éxito' : 'Juego agregado con éxito'); // Mostrar mensaje de éxito
+      setSuccessMessage(selectedGame ? 'Juego actualizado con éxito' : 'Juego agregado con éxito');
       setErrorMessage(''); // Limpiar mensaje de error
     } catch (error) {
       setSuccessMessage(''); // Limpiar mensaje de éxito
-      setErrorMessage('Error al enviar los datos del juego: ' + error.message); // Mostrar mensaje de error
+      setErrorMessage('Error al enviar los datos del juego: ' + error.message);
     }
   };
 
@@ -230,11 +217,9 @@ const Admin = () => {
     <div className="admin-container">
       <h1 className="text-3xl mb-4 text-center text-white font-bold mt-4">Gestión de Juegos</h1>
 
-      {/* Formulario */}
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-6 bg-white shadow-md rounded-md p-6">
         <h2 className="text-2xl font-bold mb-4">{selectedGame ? 'Editar Juego' : 'Agregar Juego'}</h2>
 
-        {/* Título */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">Título</label>
           <input
@@ -247,7 +232,6 @@ const Admin = () => {
           />
         </div>
 
-        {/* Género */}
         <div>
           <label htmlFor="genre" className="block text-sm font-medium text-gray-700">Género</label>
           <select
@@ -271,7 +255,6 @@ const Admin = () => {
           </select>
         </div>
 
-        {/* Año de lanzamiento */}
         <div>
           <label htmlFor="releaseYear" className="block text-sm font-medium text-gray-700">Año de lanzamiento</label>
           <input

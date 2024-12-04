@@ -6,12 +6,11 @@ const DeveloperContext = createContext();
 export const DeveloperProvider = ({ children }) => {
   const [developers, setDevelopers] = useState([]);
 
-  // Cargar desarrolladoras desde MongoDB al montar el componente
   useEffect(() => {
     const fetchDevelopers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/developers'); // Reemplaza con tu endpoint real
-        setDevelopers(response.data); // Actualizar el estado con las desarrolladoras obtenidas
+        const response = await axios.get('http://localhost:5000/api/developers');
+        setDevelopers(response.data);
       } catch (error) {
         console.error('Error fetching developers:', error);
       }
@@ -23,8 +22,8 @@ export const DeveloperProvider = ({ children }) => {
   // Método para agregar una desarrolladora
   const addDeveloper = async (developer) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/developers', developer); // Reemplaza con tu lógica de backend
-      setDevelopers((prevDevelopers) => [...prevDevelopers, response.data]); // Actualizar el estado con la nueva desarrolladora
+      const response = await axios.post('http://localhost:5000/api/developers', developer);
+      setDevelopers((prevDevelopers) => [...prevDevelopers, response.data]);
     } catch (error) {
       console.error('Error adding developer:', error);
     }
@@ -37,7 +36,6 @@ export const DeveloperProvider = ({ children }) => {
   );
 };
 
-// Hook para acceder al contexto
 export const useDeveloperContext = () => {
   return useContext(DeveloperContext);
 };

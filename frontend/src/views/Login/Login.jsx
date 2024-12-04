@@ -6,7 +6,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate(); // Para redirigir al usuario después del login
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,7 +25,7 @@ const Login = () => {
       return false;
     }
 
-    setErrorMessage(''); // Limpiar mensajes de error si las validaciones pasan
+    setErrorMessage('');
     return true;
   };
 
@@ -33,25 +33,22 @@ const Login = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      return; // Detener si el formulario no es válido
+      return;
     }
 
     try {
-      // Supongamos que el endpoint para login es '/api/login'
       const response = await axios.post('http://localhost:5000/api/users/login', formData);
       
-      // Verificar si el token está en la respuesta y guardarlo en localStorage
       if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token); // Guardar el token en localStorage
-        console.log('Token guardado:', response.data.token); // Esto es solo para depuración
+        localStorage.setItem('authToken', response.data.token);
+        console.log('Token guardado:', response.data.token);
       }
       
       if (response.status === 200) {
         setSuccessMessage('¡Inicio de sesión exitoso!');
         setErrorMessage('');
         
-        // Redirigir al usuario a una página protegida (puedes cambiar la ruta)
-        navigate('/');  // Cambia '/dashboard' por la ruta que desees
+        navigate('/');
       }
     } catch (error) {
       setSuccessMessage('');

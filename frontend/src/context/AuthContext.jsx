@@ -7,13 +7,12 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // El valor inicial es null
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Simulando la carga de datos, puedes obtener estos datos desde un API o un JWT
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Asegúrate de que 'user' contiene los roles
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 

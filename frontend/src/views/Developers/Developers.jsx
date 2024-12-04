@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useDeveloperContext } from '../../context/DeveloperContext'; // Importar el hook del contexto de desarrolladoras
+import { useDeveloperContext } from '../../context/DeveloperContext';
 import { Link } from 'react-router-dom';
 
 const DeveloperList = () => {
-  const { developers } = useDeveloperContext(); // Acceder al estado de desarrolladoras desde el contexto
+  const { developers } = useDeveloperContext();
   const [developerList, setDeveloperList] = useState([]);
 
   useEffect(() => {
-    setDeveloperList(developers); // Actualizar el estado local cuando cambien las desarrolladoras
+    setDeveloperList(developers);
   }, [developers]);
 
   return (
