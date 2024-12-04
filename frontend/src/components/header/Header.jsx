@@ -99,8 +99,8 @@ const Header = () => {
             {isDropdownOpen && (
               <ul className="absolute top-full left-0 mt-2 w-48 bg-blue-800 text-white rounded-md shadow-lg z-10">
                 {[
-                  'Acción', 'Aventura', 'RPG', 'Deportes', 'Horror', 'FPS', 'Multiplayer',
-                  'Open World', 'Racing', 'Shooters', 'Simulation', 'Strategy', 'Virtual Reality',
+                  'Acción', 'Aventura', 'RPG', 'Deportes', 'Horror', 'FPS', 'Roguelike',
+                  'Souls', 'Shooters', 'Sandbox', 'Survival',
                 ].map((category) => (
                   <li key={category} className="hover:bg-blue-600">
                     <NavLink
