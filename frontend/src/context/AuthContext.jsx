@@ -1,24 +1,28 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import jwt_decode from 'jwt-decode'; // Asegúrate de que jwt-decode esté instalado
 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // El valor inicial es null
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Simulando la carga de datos, puedes obtener estos datos desde un API o un JWT
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Asegúrate de que 'user' contiene los roles
+    const token = localStorage.getItem('authToken'); // Obtener el token de localStorage
+    if (token) {
+      try {
+        // Decodificar el token
+        const decoded = jwt_decode(token);
+        console.log('Decoded Token:', decoded); // Mostrar el token decodificado para verificar su contenido
+        setUser(decoded); // Almacenar la información del usuario en el estado
+      } catch (error) {
+        console.error('Error decoding token:', error);
+      }
     }
   }, []);
 
   const hasRole = (role) => {
-    return user && user.roles && user.roles.includes(role);
+    console.log('Checking role:', user?.role); // Ver el rol que estamos comprobando
+    return user && user.role === role;
   };
 
   return (
@@ -28,3 +32,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+export const useAuth = () => useContext(AuthContext);
