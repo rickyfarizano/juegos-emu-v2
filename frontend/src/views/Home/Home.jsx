@@ -1,7 +1,6 @@
 import React from 'react';
-import Slider from '../../components/Slider/Slider'; // Asegúrate de que el path sea correcto
+import Slider from '../../components/Slider/Slider';
 import './Home.css';
-import Carousel from '../../components/GameCarrousell/Carrousell.jsx'; // Asegúrate de que el path sea correcto
 import Carrousell from '../../components/GameCarrousell/Carrousell.jsx';
 
 const Home = () => {
@@ -12,33 +11,81 @@ const Home = () => {
           <Slider />
         </section>
 
-        {/* aca van a ir los distintos grupos de juegos separados por genero */}
         <section className="game-groups">
-
-          {/* Grupo de juegos Acción */}
           <div className="game">
             <h2 className="group-title">Acción</h2>
             <div className="container-groups">
-              {/* Aquí va el Carousel para el género Acción */}
               <Carrousell genre="Acción" />
             </div>
           </div>
 
-          {/* Grupo de juegos Aventura */}
           <div className="game">
             <h2 className="group-title">Aventura</h2>
             <div className="container-groups">
-              {/* Aquí va el Carousel para el género Aventura */}
               <Carrousell genre="Aventura" />
             </div>
           </div>
 
-          {/* Grupo de juegos RPG */}
           <div className="game">
             <h2 className="group-title">RPG</h2>
             <div className="container-groups">
-              {/* Aquí va el Carousel para el género RPG */}
               <Carrousell genre="RPG" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">Deportes</h2>
+            <div className="container-groups">
+              <Carrousell genre="Deportes" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">Horror</h2>
+            <div className="container-groups">
+              <Carrousell genre="Horror" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">FPS</h2>
+            <div className="container-groups">
+              <Carrousell genre="FPS" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">Roguelike</h2>
+            <div className="container-groups">
+              <Carrousell genre="Roguelike" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">Souls</h2>
+            <div className="container-groups">
+              <Carrousell genre="Souls" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">Shooters</h2>
+            <div className="container-groups">
+              <Carrousell genre="Shooters" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">Sandbox</h2>
+            <div className="container-groups">
+              <Carrousell genre="Sandbox" />
+            </div>
+          </div>
+
+          <div className="game">
+            <h2 className="group-title">Survival</h2>
+            <div className="container-groups">
+              <Carrousell genre="Survival" />
             </div>
           </div>
 

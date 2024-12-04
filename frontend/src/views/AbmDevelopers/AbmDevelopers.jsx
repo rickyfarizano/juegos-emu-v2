@@ -30,10 +30,19 @@ const AbmDevelopers = () => {
     fetchDevelopers();
   }, []);
 
+  const validateForm = (data) => {
+    const errors = {};
+    if (!data.name.trim()) errors.name = 'El nombre es obligatorio.';
+    if (!data.country.trim()) errors.country = 'El país es obligatorio.';
+    return errors;
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (!name || !country) {
-      setErrorMessage('Por favor, completa todos los campos obligatorios.');
+    const errors = validateForm({ name, country });
+
+    if (Object.keys(errors).length > 0) {
+      setErrorMessage(Object.values(errors).join(' '));
       return;
     }
 
@@ -73,11 +82,11 @@ const AbmDevelopers = () => {
 
       if (response.ok) {
         setDevelopers(developers.filter(dev => dev.name !== selectedDeveloper));
+        setSelectedDeveloper(null);
         setSuccessMessage('Desarrollador borrado exitosamente!');
         setTimeout(() => setSuccessMessage(''), 3000);
       } else {
         const errorData = await response.json();
-        console.error('Error al borrar el desarrollador:', errorData.message || response.statusText);
         setErrorMessage('Error al borrar el desarrollador: ' + (errorData.message || response.statusText));
       }
     } catch (error) {
@@ -88,8 +97,10 @@ const AbmDevelopers = () => {
 
   const handleEdit = async (e) => {
     e.preventDefault();
-    if (!selectedDeveloper || !editName || !editCountry) {
-      setErrorMessage('Por favor, completa todos los campos obligatorios para editar.');
+    const errors = validateForm({ name: editName, country: editCountry });
+
+    if (Object.keys(errors).length > 0) {
+      setErrorMessage(Object.values(errors).join(' '));
       return;
     }
 
@@ -107,12 +118,11 @@ const AbmDevelopers = () => {
       }
 
       const updatedDeveloper = await response.json();
-
       setDevelopers(developers.map((dev) => (dev.name === selectedDeveloper ? updatedDeveloper : dev)));
-
       setEditName('');
       setEditFounded('');
       setEditCountry('');
+      setSelectedDeveloper(null);
       setSuccessMessage('Desarrollador editado exitosamente!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {

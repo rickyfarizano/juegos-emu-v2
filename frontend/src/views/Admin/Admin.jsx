@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDeveloperContext } from '../../context/DeveloperContext';
+import { useAuth } from '../../context/AuthContext'; // Importando AuthContext
+import { Navigate } from 'react-router-dom';
 
 const Admin = () => {
   const [games, setGames] = useState([]);
@@ -19,22 +21,81 @@ const Admin = () => {
     downloadLink: '',
   });
 
+/*   // Verificación de roles
+  const isAuthorized =
+    hasRole('super-admin') || hasRole('admin') || hasRole('admin-game');
+
+  console.log('Is Authorized:', isAuthorized); // Ver si el usuario tiene un rol autorizado
+
+  // Si el usuario no está autorizado, redirigir a "unauthorized"
+  if (!isAuthorized) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+ */
+
+  const [errors, setErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  const validateForm = () => {
+    const {
+      title,
+      genre,
+      releaseYear,
+      weight,
+      developer,
+      description,
+      requirements,
+    } = formData;
+  
+    const newErrors = {}; // Usamos un objeto para almacenar los errores
+  
+    if (!title) {
+      newErrors.title = 'El campo título no puede estar vacío.';
+    }
+    if (!genre) {
+      newErrors.genre = 'El campo género no puede estar vacío.';
+    }
+    if (!releaseYear) {
+      newErrors.releaseYear = 'El campo año de lanzamiento no puede estar vacío.';
+    }
+    if (!weight) {
+      newErrors.weight = 'El campo peso no puede estar vacío.';
+    }
+    if (!developer) {
+      newErrors.developer = 'El campo desarrollador no puede estar vacío.';
+    }
+    if (!description) {
+      newErrors.description = 'El campo descripción no puede estar vacío.';
+    }
+    if (!requirements.gpu || !requirements.ram || !requirements.cpu) {
+      newErrors.requirements = 'Todos los campos de requerimientos del sistema son obligatorios.';
+    }
+  
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors); // Establecemos todos los errores de una vez
+      return false;
+    }
+  
+    setErrors({}); // Limpiamos los errores si todo es válido
+    return true;
+  };
+
   useEffect(() => {
     const fetchGames = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/games');
         const data = await response.json();
         setGames(data);
-
-        console.log(data);
       } catch (error) {
-        console.error('Error al obtener los juegos:', error);
+        console.error('Error fetching games:', error);
       }
     };
 
     fetchGames();
   }, []);
 
+  // Manejo de formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -75,61 +136,60 @@ const Admin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    if (!validateForm()) {
+      return;
+    }
+
     const formPayload = new FormData();
-  
-    // Recorremos formData para agregar sus valores al FormData
+    
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'requirements') {
-        // Si 'requirements' es un objeto, lo recorremos para agregar sus propiedades
         Object.entries(value).forEach(([reqKey, reqValue]) => {
           formPayload.append(`requirements[${reqKey}]`, reqValue);
         });
       } else if (key === 'gallery' && value.length > 0) {
-        // Si 'gallery' tiene archivos, los agregamos a formPayload
         value.forEach((file, index) => {
           formPayload.append(`gallery[${index}]`, file);
         });
       } else if (key === 'image' && value) {
-        // Si hay una imagen seleccionada, la agregamos
         formPayload.append(key, value);
       } else if (value && typeof value !== 'object') {
-        // Si el valor no es un objeto, lo agregamos directamente
         formPayload.append(key, value);
       }
     });
-  
+
     try {
       const response = await fetch(
         selectedGame
           ? `http://localhost:5000/api/games/${selectedGame._id}`
           : 'http://localhost:5000/api/games',
         {
-          method: selectedGame ? 'PUT' : 'POST',  // Determinamos si es un 'PUT' (actualización) o 'POST' (creación)
+          method: selectedGame ? 'PUT' : 'POST',
           body: formPayload,
         }
       );
-  
+
       if (!response.ok) throw new Error('Error en la solicitud');
-  
+
       const data = await response.json();
-  
-      // Si estamos actualizando un juego, actualizamos la lista
+
       if (selectedGame) {
         setGames((prevGames) =>
           prevGames.map((game) => (game._id === data._id ? data : game))
         );
       } else {
-        // Si estamos creando un juego, lo agregamos a la lista
         setGames((prevGames) => [...prevGames, data]);
       }
-  
-      resetForm(); // Reseteamos el formulario después de enviar los datos
+
+      resetForm();
+      setSuccessMessage(selectedGame ? 'Juego actualizado con éxito' : 'Juego agregado con éxito'); // Mostrar mensaje de éxito
+      setErrorMessage(''); // Limpiar mensaje de error
     } catch (error) {
-      console.error('Error al enviar los datos del juego:', error);
+      setSuccessMessage(''); // Limpiar mensaje de éxito
+      setErrorMessage('Error al enviar los datos del juego: ' + error.message); // Mostrar mensaje de error
     }
   };
-  
 
   const handleDelete = async (gameId) => {
     try {
@@ -141,7 +201,7 @@ const Admin = () => {
         setGames((prevGames) => prevGames.filter((game) => game._id !== gameId));
       }
     } catch (error) {
-      console.error('Error al eliminar el juego:', error);
+      console.error('Error deleting game:', error);
     }
   };
 
@@ -165,6 +225,7 @@ const Admin = () => {
       downloadLink: game.downloadLink || '',
     });
   };
+
   return (
     <div className="admin-container">
       <h1 className="text-3xl mb-4 text-center text-white font-bold mt-4">Gestión de Juegos</h1>
@@ -175,9 +236,7 @@ const Admin = () => {
 
         {/* Título */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-            Título
-          </label>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Título</label>
           <input
             type="text"
             name="title"
@@ -190,9 +249,7 @@ const Admin = () => {
 
         {/* Género */}
         <div>
-          <label htmlFor="genre" className="block text-sm font-medium text-gray-700">
-            Género
-          </label>
+          <label htmlFor="genre" className="block text-sm font-medium text-gray-700">Género</label>
           <select
             name="genre"
             value={formData.genre}
@@ -216,9 +273,7 @@ const Admin = () => {
 
         {/* Año de lanzamiento */}
         <div>
-          <label htmlFor="releaseYear" className="block text-sm font-medium text-gray-700">
-            Año de lanzamiento
-          </label>
+          <label htmlFor="releaseYear" className="block text-sm font-medium text-gray-700">Año de lanzamiento</label>
           <input
             type="number"
             name="releaseYear"
@@ -231,9 +286,7 @@ const Admin = () => {
 
         {/* Peso */}
         <div>
-          <label htmlFor="weight" className="block text-sm font-medium text-gray-700">
-            Peso (en GB)
-          </label>
+          <label htmlFor="weight" className="block text-sm font-medium text-gray-700">Peso (en GB)</label>
           <input
             type="number"
             name="weight"
@@ -246,117 +299,77 @@ const Admin = () => {
 
         {/* Desarrollador */}
         <div>
-          <label htmlFor="developer" className="block text-sm font-medium text-gray-700">
-            Desarrollador
-          </label>
+          <label htmlFor="developer" className="block text-sm font-medium text-gray-700">Desarrollador</label>
           <select
-            type="text"
             name="developer"
             value={formData.developer}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            required
           >
-            <option value="" selected>Seleccione un desarrollador</option>
-            {
-              developers.map((dev) => (
-                <option key={dev._id} value={dev.name} selected>{dev.name}</option>
-              ))
-            }
+            <option value="">Seleccione un desarrollador</option>
+            {developers?.map((dev) => (
+              <option key={dev._id} value={dev.name}>
+                {dev.name}
+              </option>
+            ))}
           </select>
-        </div>
-
-        {/* Imagen */}
-        <div>
-          <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-            Imagen
-          </label>
-          <input
-            type="file"
-            onChange={(e) => handleFileChange(e, 'image')}
-            accept="image/*"
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        {/* URL de YouTube */}
-        <div>
-          <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700">
-            URL de YouTube
-          </label>
-          <input
-            type="text"
-            name="youtubeUrl"
-            value={formData.youtubeUrl}
-            onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
         </div>
 
         {/* Descripción */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-            Descripción
-          </label>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Descripción</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            rows="3"
+            required
           />
         </div>
 
         {/* Requisitos */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-700">Requisitos</h3>
-          <div className="grid grid-cols-3 gap-2 mt-2">
-            <div>
-              <label htmlFor="gpu" className="block text-sm font-medium text-gray-700">
-                GPU
-              </label>
-              <input
-                type="text"
-                name="gpu"
-                value={formData.requirements.gpu}
-                onChange={handleRequirementChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div>
+            <label htmlFor="requirements.gpu" className="block text-sm font-medium text-gray-700">Requisito GPU</label>
+            <input
+              type="text"
+              name="gpu"
+              value={formData.requirements.gpu}
+              onChange={handleRequirementChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-            <div>
-              <label htmlFor="ram" className="block text-sm font-medium text-gray-700">
-                RAM
-              </label>
-              <input
-                type="text"
-                name="ram"
-                value={formData.requirements.ram}
-                onChange={handleRequirementChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+          <div>
+            <label htmlFor="requirements.ram" className="block text-sm font-medium text-gray-700">Requisito RAM</label>
+            <input
+              type="text"
+              name="ram"
+              value={formData.requirements.ram}
+              onChange={handleRequirementChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-            <div>
-              <label htmlFor="cpu" className="block text-sm font-medium text-gray-700">
-                CPU
-              </label>
-              <input
-                type="text"
-                name="cpu"
-                value={formData.requirements.cpu}
-                onChange={handleRequirementChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+          <div>
+            <label htmlFor="requirements.cpu" className="block text-sm font-medium text-gray-700">Requisito CPU</label>
+            <input
+              type="text"
+              name="cpu"
+              value={formData.requirements.cpu}
+              onChange={handleRequirementChange}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
           </div>
         </div>
 
         {/* Enlace de descarga */}
         <div>
-          <label htmlFor="downloadLink" className="block text-sm font-medium text-gray-700">
-            Enlace de Descarga
-          </label>
+          <label htmlFor="downloadLink" className="block text-sm font-medium text-gray-700">Enlace de descarga</label>
           <input
-            type="url"
+            type="text"
             name="downloadLink"
             value={formData.downloadLink}
             onChange={handleChange}
@@ -364,48 +377,93 @@ const Admin = () => {
           />
         </div>
 
-        <div className="mt-4 flex justify-center">
+        {/* Galería */}
+        <div>
+          <label htmlFor="gallery" className="block text-sm font-medium text-gray-700">Galería</label>
+          <input
+            type="file"
+            name="gallery"
+            accept="image/*"
+            multiple
+            onChange={(e) => handleFileChange(e, 'gallery')}
+            className="mt-1 block w-full text-gray-900"
+          />
+        </div>
+
+        {/* Imagen principal */}
+        <div>
+          <label htmlFor="image" className="block text-sm font-medium text-gray-700">Imagen principal</label>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e, 'image')}
+            className="mt-1 block w-full text-gray-900"
+          />
+        </div>
+
+        <div className="flex justify-center gap-4">
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-700"
+            className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
-            {selectedGame ? 'Actualizar Juego' : 'Agregar Juego'}
+            {selectedGame ? 'Guardar cambios' : 'Agregar juego'}
+          </button>
+
+          <button
+            type="button"
+            onClick={resetForm}
+            className="w-1/2 bg-gray-300 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Limpiar formulario
           </button>
         </div>
-      </form>
-      {/* Listado de juegos */}
-      <div className="mt-6 p-4">
-        <h2 className="text-xl font-bold mb-4 text-white underline decoration-2">Juegos Agregados</h2>
-        <div className="flex flex-col gap-3">
-          {games.map((game) => (
-            <div key={game._id} className="border border-gray-300 p-4 rounded-md shadow-sm bg-white rounded">
-              <h3 className="text-lg font-semibold">{game.title}</h3>
-              <p>{game.genre}</p>
-              <div className="flex justify-center align-center mt-2 flex-col gap-2">
-                <button
-                  onClick={() => handleEdit(game)}
-                  className="px-2 py-1 text-white bg-yellow-500 rounded-md hover:bg-yellow-700"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(game._id)}
-                  className="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-700"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))}
+
+        <div className="mt-6">
+          {errorMessage && <div className="bg-red-500 text-white p-4 rounded mb-4">{errorMessage}</div>}
+          {successMessage && <div className="bg-green-500 text-white p-4 rounded mb-4">{successMessage}</div>}
         </div>
+        
+      </form>
+
+      {/* Tabla de juegos */}
+      <div className="overflow-x-auto mt-8">
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 border">Título</th>
+              <th className="px-4 py-2 border">Género</th>
+              <th className="px-4 py-2 border">Año de lanzamiento</th>
+              <th className="px-4 py-2 border">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {games.map((game) => (
+              <tr key={game._id}>
+                <td className="px-4 py-2 border">{game.title}</td>
+                <td className="px-4 py-2 border">{game.genre}</td>
+                <td className="px-4 py-2 border">{game.releaseYear}</td>
+                <td className="px-4 py-2 border">
+                  <button
+                    onClick={() => handleEdit(game)}
+                    className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(game._id)}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-4"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 };
 
 export default Admin;
-
-
-
-
-
