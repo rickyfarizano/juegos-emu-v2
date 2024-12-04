@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useDeveloperContext } from '../../context/DeveloperContext';
 
 const Admin = () => {
   const [games, setGames] = useState([]);
+  const { developers } = useDeveloperContext();
   const [selectedGame, setSelectedGame] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -247,13 +249,20 @@ const Admin = () => {
           <label htmlFor="developer" className="block text-sm font-medium text-gray-700">
             Desarrollador
           </label>
-          <input
+          <select
             type="text"
             name="developer"
             value={formData.developer}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
+          >
+            <option value="" selected>Seleccione un desarrollador</option>
+            {
+              developers.map((dev) => (
+                <option key={dev._id} value={dev.name} selected>{dev.name}</option>
+              ))
+            }
+          </select>
         </div>
 
         {/* Imagen */}
