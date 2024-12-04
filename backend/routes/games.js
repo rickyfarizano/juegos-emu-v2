@@ -22,16 +22,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Crear un nuevo juego
 router.post('/', upload.single('image'), createGame);
-
-// Obtener todos los juegos con filtros opcionales
 router.get('/', getAllGames);
-
-// Obtener juegos por categoría
 router.get('/category/:genre', getGamesByCategory);
-
-// Actualizar un juego existente
 router.put(
   '/:id',
   upload.fields([
@@ -40,8 +33,6 @@ router.put(
   ]),
   updateGame
 );
-
-// Eliminar un juego
 router.delete('/:id', deleteGame);
 
 export default router;
