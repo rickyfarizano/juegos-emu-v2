@@ -5,6 +5,7 @@ import Footer from './components/Footer/Footer';
 import Home from './views/Home/Home';
 import GameList from './views/GameList/GameList';
 import Developers from './views/Developers/Developers';
+import DeveloperDetails from './views/DeveloperDetails/DeveloperDetails';
 import GameDetails from './views/GameDetails/GameDetails';
 import GameCategories from './views/Categories/GameCategories'; // Actualizamos esta ruta
 import Admin from './views/Admin/Admin';
@@ -38,6 +39,7 @@ function App() {
 
           {/* Rutas de los desarrolladores y administración */}
           <Route path="/developers" element={<Developers />} />
+          <Route path="/developers/developerDetails/:id" element={<DeveloperDetails />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/search" element={<SearchResults />} /> 
           <Route path="/admin/developers" element={<AbmDevelopers />} />
