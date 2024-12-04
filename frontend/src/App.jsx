@@ -14,6 +14,8 @@ import Register from './views/Register/Register';
 import { GameProvider } from './context/GameContext';
 import { DeveloperProvider } from './context/DeveloperContext';
 import SearchResults from './views/SearchResults/SearchResults';
+import { AuthProvider } from './context/AuthContext';
+import Unauthorized from './components/Unauthorized';
 function App() {
   return (
     <GameProvider> {/* Envolvemos la aplicación con GameProvider */}
@@ -32,6 +34,7 @@ function App() {
 
           {/* Ruta específica de categoría con el parámetro :genre */}
           <Route path="/category/:genre" element={<GameCategories />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
           {/* Rutas de los desarrolladores y administración */}
           <Route path="/developers" element={<Developers />} />

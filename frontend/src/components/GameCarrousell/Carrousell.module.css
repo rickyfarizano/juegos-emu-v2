@@ -3,10 +3,6 @@
   padding: 20px;
 }
 
-.mySwiper {
-  /* Opcional: Ajustes globales del swiper */
-}
-
 .swiper-slide {
   display: flex;
   justify-content: center; /* Alinea las tarjetas en el centro */
