@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom'; // Para acceder a la URL y parámetros
-import { useGameContext } from '../../context/GameContext'; // Accedemos al contexto
-import GameCard from '../../components/GameCard/GameCard'; // Componente que muestra cada juego
+import { useLocation } from 'react-router-dom';
+import { useGameContext } from '../../context/GameContext';
+import GameCard from '../../components/GameCard/GameCard';
 
 const SearchResults = () => {
-  const { games = [] } = useGameContext(); // Extraemos los juegos desde el contexto, con valor por defecto vacío
+  const { games = [] } = useGameContext();
   const [filteredGames, setFilteredGames] = useState([]);
-  const location = useLocation(); // Usamos useLocation para acceder a la URL
+  const location = useLocation();
 
-  // Obtener el término de búsqueda desde la URL, normalizado (en minúsculas y sin espacios adicionales)
   const query = new URLSearchParams(location.search).get('search') || ''; 
 
   useEffect(() => {
     if (query) {
-      // Limpiamos el término de búsqueda y lo pasamos a minúsculas
       const cleanQuery = query.trim().toLowerCase();
 
-      // Filtramos los juegos por el nombre o el título, haciendo la comparación en minúsculas
       const results = games.filter(game => {
-        const gameName = game.name ? game.name.toLowerCase() : '';  // Aseguramos que 'name' esté definido
-        const gameTitle = game.title ? game.title.toLowerCase() : ''; // Aseguramos que 'title' esté definido
+        const gameName = game.name ? game.name.toLowerCase() : '';
+        const gameTitle = game.title ? game.title.toLowerCase() : '';
 
         // Filtramos si el nombre o el título contienen el término de búsqueda
         return gameName.includes(cleanQuery) || gameTitle.includes(cleanQuery);
@@ -27,9 +24,9 @@ const SearchResults = () => {
 
       setFilteredGames(results);
     } else {
-      setFilteredGames([]); // Si no hay término de búsqueda, mostramos una lista vacía
+      setFilteredGames([]);
     }
-  }, [games, query]); // Dependemos de los juegos y el término de búsqueda
+  }, [games, query]);
 
   return (
     <div>

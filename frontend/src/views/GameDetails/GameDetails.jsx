@@ -11,16 +11,14 @@ const GameDetails = () => {
 
     const selectedGame = games.find(game => game._id === id);
     
-
-    // Si se encuentra el juego, actualiza el estado con los detalles del juego
     if (selectedGame) {
       setGameDetails(selectedGame);
       console.log(selectedGame);
     }
-  }, [id, games]); // Dependencias: se ejecuta cada vez que cambia el id o los juegos
+  }, [id, games]);
 
   if (!gameDetails) {
-    return <p>Juego no encontrado.</p>; // Muestra un mensaje si no se encuentra el juego
+    return <p>Juego no encontrado.</p>;
   }
   
   return (

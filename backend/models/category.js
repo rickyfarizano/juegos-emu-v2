@@ -12,7 +12,7 @@ const categorySchema = new mongoose.Schema({
     required: true,
   },
   image: {
-    type: String,  // Para almacenar la ruta de la imagen asociada a la categoría
+    type: String, 
   },
 });
 

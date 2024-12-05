@@ -37,7 +37,7 @@ const Register = () => {
       validationErrors.push('La contraseña debe tener al menos 4 caracteres.');
     }
 
-    setErrors(validationErrors); // Actualizar la lista de errores
+    setErrors(validationErrors);
     return validationErrors.length === 0;
   };
 
@@ -45,7 +45,7 @@ const Register = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      return; // Si el formulario no pasa las validaciones, no envía la solicitud
+      return;
     }
 
     try {
@@ -53,8 +53,8 @@ const Register = () => {
 
       if (response.status === 201) {
         setSuccessMessage('¡Usuario registrado exitosamente!');
-        setErrors([]); // Limpiar errores
-        setFormData({ name: '', email: '', password: '' }); // Limpiar formulario
+        setErrors([]);
+        setFormData({ name: '', email: '', password: '' }); 
       }
     } catch (error) {
       setSuccessMessage('');

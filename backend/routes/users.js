@@ -1,4 +1,3 @@
-// routes/users.js
 import express from 'express';
 import { createUser, getAllUsers, getUserByName, updateUser, deleteUser, loginUser } from '../controllers/userController.js';
 

@@ -10,15 +10,13 @@ const Header = () => {
   // Función para verificar la autenticación
   const checkAuthStatus = () => {
     const token = localStorage.getItem('authToken');
-    setIsAuthenticated(!!token); // Si existe el token, el usuario está autenticado
+    setIsAuthenticated(!!token);
   };
 
-  // Efecto para verificar si hay un token al montar el componente
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
-  // Efecto para escuchar cambios en el localStorage
   useEffect(() => {
     const handleStorageChange = () => {
       checkAuthStatus();
@@ -39,18 +37,18 @@ const Header = () => {
     e.preventDefault();
     if (searchTerm.trim() !== '') {
       navigate(`/search?search=${searchTerm}`);
-      setSearchTerm(''); // Limpia el input después de la búsqueda
+      setSearchTerm('');
     }
   };
 
   const handleCategoryClick = () => {
-    setDropdownOpen(false); // Cierra el menú al seleccionar una categoría
+    setDropdownOpen(false);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken'); // Eliminar el token
-    setIsAuthenticated(false); // Actualiza el estado de autenticación
-    navigate('/login'); // Redirigir a la página de login
+    localStorage.removeItem('authToken'); 
+    setIsAuthenticated(false);
+    navigate('/login');
   };
 
   return (
@@ -59,7 +57,6 @@ const Header = () => {
       
       <nav className='flex flex-row gap-4 justify-center items-center'>
         <ul className="flex gap-6 items-center">
-          {/* Links principales */}
           <li>
             <NavLink to="/" className="hover:text-gray-200">
               Home

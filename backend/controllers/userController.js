@@ -89,14 +89,14 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
-    // Generar el JWT (JSON Web Token)
+    // Generaa el JWT
     const token = jwt.sign(
       { id: user._id, name: user.name, email: user.email }, //payload
       process.env.JWT_SECRET, 
       { expiresIn: '5m' } // Expiración del token
     );
 
-    // Devolver el token junto con la respuesta
+    // Devuelve el token junto con la respuesta
     res.status(200).json({
       message: 'Inicio de sesión exitoso',
       user: {

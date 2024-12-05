@@ -18,23 +18,7 @@ const Admin = () => {
     requirements: { gpu: '', ram: '', cpu: '' },
     downloadLink: '',
   });
-  const [errors, setErrors] = useState({});
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = 'El título es obligatorio.';
-    if (!formData.genre) newErrors.genre = 'El género es obligatorio.';
-    if (!formData.releaseYear || formData.releaseYear <= 0)
-      newErrors.releaseYear = 'El año de lanzamiento debe ser válido.';
-    if (!formData.weight || formData.weight <= 0) newErrors.weight = 'El peso debe ser mayor a 0.';
-    if (!formData.developer) newErrors.developer = 'Debe seleccionar un desarrollador.';
-    if (formData.youtubeUrl && !/^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(formData.youtubeUrl))
-      newErrors.youtubeUrl = 'La URL de YouTube no es válida.';
-    if (!formData.downloadLink || !/^https?:\/\//.test(formData.downloadLink))
-      newErrors.downloadLink = 'El enlace de descarga no es válido.';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  
 
   useEffect(() => {
     const fetchGames = async () => {
