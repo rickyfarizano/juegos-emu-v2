@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/free-mode';
-import 'swiper/css/pagination';
 import './Carrousell.module.css';
 
-import { FreeMode, Pagination } from 'swiper/modules';
+import { FreeMode } from 'swiper/modules';
 import { useGameContext } from '../../context/GameContext';
 import GameCard from '../GameCard/GameCard'; // Asegúrate de tener este componente
 
@@ -23,13 +22,11 @@ const Carrousell = ({ genre }) => {
     <div className="carousel-container">
       {filteredGames.length > 0 ? (
         <Swiper
-          slidesPerView={3}  // 3 juegos por fila
-          spaceBetween={-150}  // Menos espacio entre juegos (lo hemos reducido a -20px)
+          slidesPerView={3} // 3 juegos por fila
+          spaceBetween={-150} // Menos espacio entre juegos
           freeMode={true}
-          pagination={{
-            clickable: true,
-          }}
-          modules={[FreeMode, Pagination]}
+          loop={true} // Habilitar loop
+          modules={[FreeMode]}
           className="mySwiper"
         >
           {filteredGames.map((game) => (
