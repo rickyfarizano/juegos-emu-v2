@@ -29,13 +29,22 @@ const SearchResults = () => {
   }, [games, query]);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Resultados de búsqueda para "{query}"</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 m-4">
+    <div className="min-h-screen flex flex-col items-start p-4">
+      <h1 className="text-2xl font-bold text-blue-700 text-center">
+        {`Resultados de búsqueda para "${query}"`}
+      </h1>
+      
+      <div className="flex flex-wrap justify-center gap-4 w-full mt-4">
         {filteredGames.length > 0 ? (
-          filteredGames.map(game => <GameCard key={game._id} game={game} />)
+          filteredGames.map(game => (
+            <div key={game._id} className="transition-opacity duration-500 opacity-100 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4">
+              <GameCard game={game} />
+            </div>
+          ))
         ) : (
-          <p>No se encontraron juegos para "{query}".</p>
+          <p className="text-center text-red-500 col-span-full">
+            No se encontraron juegos para "{query}".
+          </p>
         )}
       </div>
     </div>
