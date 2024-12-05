@@ -7,7 +7,7 @@ const GameList = () => {
   const { games } = useGameContext(); // Extraemos los juegos desde el contexto
   const [newGames, setNewGames] = useState([]);
   const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const gamesPerPage = 5; // Número de juegos por página
+  const gamesPerPage = 12; // Número de juegos por página
 
   // Sincronizamos los juegos desde el contexto con el estado local
   useEffect(() => {

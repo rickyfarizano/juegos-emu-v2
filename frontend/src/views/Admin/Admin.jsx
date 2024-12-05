@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDeveloperContext } from '../../context/DeveloperContext';
-import { useAuth } from '../../context/AuthContext'; // Importando AuthContext
-import { Navigate } from 'react-router-dom';
 
 const Admin = () => {
   const [games, setGames] = useState([]);
@@ -20,19 +18,23 @@ const Admin = () => {
     requirements: { gpu: '', ram: '', cpu: '' },
     downloadLink: '',
   });
-  const { hasRole } = useAuth(); // Accediendo a la función hasRole
+  const [errors, setErrors] = useState({});
 
-  // Verificación de roles
-  /*
-  const isAuthorized =
-    hasRole('super-admin') || hasRole('admin') || hasRole('admin-game');
-
-  console.log('Is Authorized:', isAuthorized); // Ver si el usuario tiene un rol autorizado
-
-  // Si el usuario no está autorizado, redirigir a "unauthorized"
-  if (!isAuthorized) {
-    return <Navigate to="/unauthorized" replace />;
-  }*/
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = 'El título es obligatorio.';
+    if (!formData.genre) newErrors.genre = 'El género es obligatorio.';
+    if (!formData.releaseYear || formData.releaseYear <= 0)
+      newErrors.releaseYear = 'El año de lanzamiento debe ser válido.';
+    if (!formData.weight || formData.weight <= 0) newErrors.weight = 'El peso debe ser mayor a 0.';
+    if (!formData.developer) newErrors.developer = 'Debe seleccionar un desarrollador.';
+    if (formData.youtubeUrl && !/^https?:\/\/(www\.)?youtube\.com\/watch\?v=/.test(formData.youtubeUrl))
+      newErrors.youtubeUrl = 'La URL de YouTube no es válida.';
+    if (!formData.downloadLink || !/^https?:\/\//.test(formData.downloadLink))
+      newErrors.downloadLink = 'El enlace de descarga no es válido.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -40,15 +42,16 @@ const Admin = () => {
         const response = await fetch('http://localhost:5000/api/games');
         const data = await response.json();
         setGames(data);
+
+        console.log(data);
       } catch (error) {
-        console.error('Error fetching games:', error);
+        console.error('Error al obtener los juegos:', error);
       }
     };
 
     fetchGames();
   }, []);
 
-  // Manejo de formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -89,52 +92,61 @@ const Admin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     const formPayload = new FormData();
-
+  
+    // Recorremos formData para agregar sus valores al FormData
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'requirements') {
+        // Si 'requirements' es un objeto, lo recorremos para agregar sus propiedades
         Object.entries(value).forEach(([reqKey, reqValue]) => {
           formPayload.append(`requirements[${reqKey}]`, reqValue);
         });
       } else if (key === 'gallery' && value.length > 0) {
+        // Si 'gallery' tiene archivos, los agregamos a formPayload
         value.forEach((file, index) => {
           formPayload.append(`gallery[${index}]`, file);
         });
       } else if (key === 'image' && value) {
+        // Si hay una imagen seleccionada, la agregamos
         formPayload.append(key, value);
       } else if (value && typeof value !== 'object') {
+        // Si el valor no es un objeto, lo agregamos directamente
         formPayload.append(key, value);
       }
     });
-
+  
     try {
       const response = await fetch(
         selectedGame
           ? `http://localhost:5000/api/games/${selectedGame._id}`
           : 'http://localhost:5000/api/games',
         {
-          method: selectedGame ? 'PUT' : 'POST',
+          method: selectedGame ? 'PUT' : 'POST',  // Determinamos si es un 'PUT' (actualización) o 'POST' (creación)
           body: formPayload,
         }
       );
-
-      if (!response.ok) throw new Error('Error in request');
-
+  
+      if (!response.ok) throw new Error('Error en la solicitud');
+  
       const data = await response.json();
-
+  
+      // Si estamos actualizando un juego, actualizamos la lista
       if (selectedGame) {
         setGames((prevGames) =>
           prevGames.map((game) => (game._id === data._id ? data : game))
         );
       } else {
+        // Si estamos creando un juego, lo agregamos a la lista
         setGames((prevGames) => [...prevGames, data]);
       }
-
-      resetForm();
+  
+      resetForm(); // Reseteamos el formulario después de enviar los datos
     } catch (error) {
-      console.error('Error submitting game data:', error);
+      console.error('Error al enviar los datos del juego:', error);
     }
   };
+  
 
   const handleDelete = async (gameId) => {
     try {
@@ -146,7 +158,7 @@ const Admin = () => {
         setGames((prevGames) => prevGames.filter((game) => game._id !== gameId));
       }
     } catch (error) {
-      console.error('Error deleting game:', error);
+      console.error('Error al eliminar el juego:', error);
     }
   };
 
@@ -170,7 +182,6 @@ const Admin = () => {
       downloadLink: game.downloadLink || '',
     });
   };
-
   return (
     <div className="admin-container">
       <h1 className="text-3xl mb-4 text-center text-white font-bold mt-4">Gestión de Juegos</h1>
@@ -181,7 +192,9 @@ const Admin = () => {
 
         {/* Título */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Título</label>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            Título
+          </label>
           <input
             type="text"
             name="title"
@@ -194,7 +207,9 @@ const Admin = () => {
 
         {/* Género */}
         <div>
-          <label htmlFor="genre" className="block text-sm font-medium text-gray-700">Género</label>
+          <label htmlFor="genre" className="block text-sm font-medium text-gray-700">
+            Género
+          </label>
           <select
             name="genre"
             value={formData.genre}
@@ -218,7 +233,9 @@ const Admin = () => {
 
         {/* Año de lanzamiento */}
         <div>
-          <label htmlFor="releaseYear" className="block text-sm font-medium text-gray-700">Año de lanzamiento</label>
+          <label htmlFor="releaseYear" className="block text-sm font-medium text-gray-700">
+            Año de lanzamiento
+          </label>
           <input
             type="number"
             name="releaseYear"
@@ -231,7 +248,9 @@ const Admin = () => {
 
         {/* Peso */}
         <div>
-          <label htmlFor="weight" className="block text-sm font-medium text-gray-700">Peso (en GB)</label>
+          <label htmlFor="weight" className="block text-sm font-medium text-gray-700">
+            Peso (en GB)
+          </label>
           <input
             type="number"
             name="weight"
@@ -244,71 +263,105 @@ const Admin = () => {
 
         {/* Desarrollador */}
         <div>
-          <label htmlFor="developer" className="block text-sm font-medium text-gray-700">Desarrollador</label>
+          <label htmlFor="developer" className="block text-sm font-medium text-gray-700">
+            Desarrollador
+          </label>
           <select
+            type="text"
             name="developer"
             value={formData.developer}
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            required
           >
-            <option value="">Seleccione un desarrollador</option>
-            {developers?.map((dev) => (
-              <option key={dev._id} value={dev._id}>
-                {dev.name}
-              </option>
-            ))}
+            <option value="" selected>Seleccione un desarrollador</option>
+            {
+              developers.map((dev) => (
+                <option key={dev._id} value={dev.name} selected>{dev.name}</option>
+              ))
+            }
           </select>
+        </div>
+
+        {/* Imagen */}
+        <div>
+          <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+            Imagen
+          </label>
+          <input
+            type="file"
+            onChange={(e) => handleFileChange(e, 'image')}
+            accept="image/*"
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        {/* URL de YouTube */}
+        <div>
+          <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700">
+            URL de YouTube
+          </label>
+          <input
+            type="text"
+            name="youtubeUrl"
+            value={formData.youtubeUrl}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
 
         {/* Descripción */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Descripción</label>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+            Descripción
+          </label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
-            rows={4}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            required
           />
         </div>
 
         {/* Requisitos */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Requisitos</label>
-          <div className="grid grid-cols-3 gap-4">
+          <h3 className="text-lg font-medium text-gray-700">Requisitos</h3>
+          <div className="grid grid-cols-3 gap-2 mt-2">
             <div>
-              <label htmlFor="gpu" className="block text-xs text-gray-600">GPU</label>
+              <label htmlFor="gpu" className="block text-sm font-medium text-gray-700">
+                GPU
+              </label>
               <input
                 type="text"
                 name="gpu"
                 value={formData.requirements.gpu}
                 onChange={handleRequirementChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900"
-                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+
             <div>
-              <label htmlFor="ram" className="block text-xs text-gray-600">RAM</label>
+              <label htmlFor="ram" className="block text-sm font-medium text-gray-700">
+                RAM
+              </label>
               <input
                 type="text"
                 name="ram"
                 value={formData.requirements.ram}
                 onChange={handleRequirementChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900"
-                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+
             <div>
-              <label htmlFor="cpu" className="block text-xs text-gray-600">CPU</label>
+              <label htmlFor="cpu" className="block text-sm font-medium text-gray-700">
+                CPU
+              </label>
               <input
                 type="text"
                 name="cpu"
                 value={formData.requirements.cpu}
                 onChange={handleRequirementChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900"
-                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
@@ -316,67 +369,58 @@ const Admin = () => {
 
         {/* Enlace de descarga */}
         <div>
-          <label htmlFor="downloadLink" className="block text-sm font-medium text-gray-700">Enlace de descarga</label>
+          <label htmlFor="downloadLink" className="block text-sm font-medium text-gray-700">
+            Enlace de Descarga
+          </label>
           <input
             type="url"
             name="downloadLink"
             value={formData.downloadLink}
             onChange={handleChange}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900"
-            required
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
-        {/* Botón de guardar */}
-        <div className="mt-6 text-center">
+        <div className="mt-4 flex justify-center">
           <button
             type="submit"
-            className="w-full py-2 px-4 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none"
+            className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-700"
           >
             {selectedGame ? 'Actualizar Juego' : 'Agregar Juego'}
           </button>
         </div>
       </form>
-
-      {/* Listado de Juegos */}
-      <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Juegos Existentes</h2>
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b">Título</th>
-              <th className="py-2 px-4 border-b">Género</th>
-              <th className="py-2 px-4 border-b">Año</th>
-              <th className="py-2 px-4 border-b">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {games.map((game) => (
-              <tr key={game._id}>
-                <td className="py-2 px-4 border-b">{game.title}</td>
-                <td className="py-2 px-4 border-b">{game.genre}</td>
-                <td className="py-2 px-4 border-b">{game.releaseYear}</td>
-                <td className="py-2 px-4 border-b">
-                  <button
-                    onClick={() => handleEdit(game)}
-                    className="px-4 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600 focus:outline-none"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(game._id)}
-                    className="ml-2 px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none"
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Listado de juegos */}
+      <div className="mt-6 p-4">
+        <h2 className="text-xl font-bold mb-4 text-white underline decoration-2">Juegos Agregados</h2>
+        <div className="flex flex-col gap-3">
+          {games.map((game) => (
+            <div key={game._id} className="border border-gray-300 p-4 rounded-md shadow-sm bg-white rounded">
+              <h3 className="text-lg font-semibold">{game.title}</h3>
+              <p>{game.genre}</p>
+              <div className="flex justify-center align-center mt-2 flex-col gap-2">
+                <button
+                  onClick={() => handleEdit(game)}
+                  className="px-2 py-1 text-white bg-yellow-500 rounded-md hover:bg-yellow-700"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(game._id)}
+                  className="px-2 py-1 text-white bg-red-500 rounded-md hover:bg-red-700"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
 export default Admin;
+
+
+
